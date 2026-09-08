@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@import "@prime2b/ui-kit/tokens.css";
+
+@source "../../../packages/ui-kit/src";
+
+/*
+ * --color-primary/secondary/text/accent and --font-title/body/base/heading
+ * come from @prime2b/ui-kit/tokens.css — dev fallback values extracted
+ * from the reference Elementor template. Real values are supplied per
+ * client project (see CLAUDE.md: "Theme-aware by contract"). Components
+ * must consume these tokens, never hardcoded colors.
+ */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-text: var(--color-text);
+  --color-accent: var(--color-accent);
+  /* Fixed system constants (tokens.css), never overridden per client. */
+  --color-on-light: var(--color-text-on-light);
+  --color-on-dark: var(--color-text-on-dark);
+  --font-title: var(--font-inter-tight);
+  --font-body: var(--font-inter);
+  /* Tailwind v4 font-size utilities key off --text-*, not --font-size-*
+     (that's only the source variable name tokens.css uses) — without
+     this, `text-base`/`text-heading` never actually resolve. */
+  --text-base: var(--font-size-base);
+  --text-heading: var(--font-size-heading);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

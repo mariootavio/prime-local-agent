@@ -1,0 +1,53 @@
+/*
+ * Design tokens — CSS custom properties.
+ *
+ * The values below are development fallbacks extracted from the
+ * reference Elementor template. They exist so the ui-kit and the
+ * playground have something to render during development.
+ *
+ * Per CLAUDE.md ("Theme-aware by contract"): components must never
+ * hardcode these values directly. Each client project supplies its
+ * own brand tokens (via prime-local.json / the composition step),
+ * which override this :root block for that project.
+ */
+
+:root {
+  --color-primary: #20426f;
+  --color-secondary: #041225;
+  --color-text: #6b727b;
+  --color-accent: #dc2828;
+
+  --font-title: "Inter Tight";
+  --font-body: "Inter";
+
+  --font-size-base: 16px;
+  --font-size-heading: 49px;
+
+  --container-max-width: 1280px;
+}
+
+/*
+ * Fixed tokens — NOT part of the client's brand palette and never
+ * overridden by prime-local.json. --color-whatsapp is WhatsApp's own
+ * brand color; it identifies the WhatsApp CTA regardless of which
+ * client's cores.accent is in effect (see
+ * packages/agent/rules/whatsapp-cta.md).
+ *
+ * --color-text-on-light and --color-text-on-dark are the other fixed
+ * pair here: plain black/white system constants for text that must
+ * stay legible regardless of the client's palette, picked by the
+ * background a section actually renders against — a light surface
+ * (white, bg-gray-50, an image with a light overlay) always uses
+ * --color-text-on-light, a colored or dark surface (--color-primary,
+ * --color-secondary, an image with a dark overlay) always uses
+ * --color-text-on-dark. Components must reference these instead of
+ * hardcoding `text-white`/`text-black` (or any literal white/black)
+ * directly, and prime-local.json never overrides them — unlike
+ * --color-text, which IS a client brand token for body copy on a
+ * section's own light background.
+ */
+:root {
+  --color-whatsapp: #25d366;
+  --color-text-on-light: #000000;
+  --color-text-on-dark: #ffffff;
+}

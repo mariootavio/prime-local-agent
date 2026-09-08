@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "prime-local.schema.json",
+  "title": "PrimeLocalClientData",
+  "description": "Client business data collected during the /prime-local create interview (produces prime-local.json) and consumed by the composition step.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["nome", "segmento", "cidade", "whatsapp", "cores", "logoUrl"],
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome do negócio."
+    },
+    "segmento": {
+      "type": "string",
+      "description": "Segmento/ramo de atuação do negócio."
+    },
+    "cidade": {
+      "type": "string",
+      "description": "Cidade onde o negócio está localizado."
+    },
+    "estado": {
+      "type": "string",
+      "description": "Estado (UF) onde o negócio está localizado."
+    },
+    "enderecoCompleto": {
+      "type": "string",
+      "description": "Endereço completo do negócio."
+    },
+    "bairrosERegioesAtendidas": {
+      "type": "string",
+      "description": "Bairros e/ou regiões atendidas pelo negócio."
+    },
+    "telefone": {
+      "type": "string",
+      "description": "Telefone de contato."
+    },
+    "whatsapp": {
+      "type": "string",
+      "description": "Número de WhatsApp para contato, usado nos CTAs do site."
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail de contato do negócio, usado na seção Footer."
+    },
+    "mensagemPrincipalWhatsapp": {
+      "type": "string",
+      "description": "Mensagem pré-preenchida enviada ao clicar nos CTAs de WhatsApp."
+    },
+    "horario": {
+      "type": "string",
+      "description": "Horário de funcionamento."
+    },
+    "instagram": {
+      "type": "string",
+      "description": "URL ou @ do perfil do Instagram."
+    },
+    "facebook": {
+      "type": "string",
+      "description": "URL da página do Facebook."
+    },
+    "googleBusinessProfile": {
+      "type": "string",
+      "description": "URL do perfil no Google Business Profile."
+    },
+    "googleMaps": {
+      "type": "string",
+      "description": "URL ou embed do Google Maps."
+    },
+    "title": {
+      "type": "string",
+      "description": "Title tag da página, para SEO."
+    },
+    "metaDescription": {
+      "type": "string",
+      "description": "Meta description da página, para SEO."
+    },
+    "palavraChavePrincipal": {
+      "type": "string",
+      "description": "Palavra-chave principal alvo de SEO."
+    },
+    "palavrasChaveSecundarias": {
+      "type": "array",
+      "description": "Palavras-chave secundárias alvo de SEO.",
+      "items": { "type": "string" }
+    },
+    "produtos": {
+      "type": "array",
+      "description": "Produtos oferecidos pelo negócio.",
+      "items": { "type": "string" }
+    },
+    "servicos": {
+      "type": "array",
+      "description": "Serviços oferecidos pelo negócio.",
+      "items": { "type": "string" }
+    },
+    "diferenciaisConfirmados": {
+      "type": "array",
+      "description": "Diferenciais do negócio confirmados pelo cliente durante a entrevista.",
+      "items": { "type": "string" }
+    },
+    "cores": {
+      "type": "object",
+      "description": "Paleta de marca do cliente. Sobrepõe os tokens de tema padrão do ui-kit (ver src/styles/tokens.css). Não inclui texto fixo sobre fundo claro/escuro — isso vem de --color-text-on-light/--color-text-on-dark, constantes do sistema (ver tokens.css), nunca deste objeto.",
+      "additionalProperties": false,
+      "required": ["primary", "secondary"],
+      "properties": {
+        "primary": {
+          "type": "string",
+          "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "description": "Cor primária da marca, em hex."
+        },
+        "secondary": {
+          "type": "string",
+          "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "description": "Cor secundária da marca, em hex."
+        },
+        "text": {
+          "type": "string",
+          "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "description": "Cor de texto de apoio da marca, em hex. Opcional — não é mais um campo tipicamente fornecido pelo cliente; quando ausente, usa o fallback padrão de --color-text em tokens.css."
+        },
+        "accent": {
+          "type": "string",
+          "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$",
+          "description": "Cor de destaque/CTA da marca, em hex. Opcional — quando ausente, usa o mesmo valor de 'primary' como fallback."
+        },
+        "colorSource": {
+          "type": "string",
+          "enum": ["logo", "manual"],
+          "description": "Origem das cores acima: 'logo' quando extraídas automaticamente a partir de logoUrl, 'manual' quando fornecidas diretamente pelo cliente durante a entrevista."
+        }
+      }
+    },
+    "logoUrl": {
+      "type": "string",
+      "description": "URL do logo do cliente."
+    },
+    "imagens": {
+      "type": "array",
+      "description": "URLs das imagens recebidas do cliente para uso no site.",
+      "items": { "type": "string" }
+    }
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "sections": [
+    {
+      "name": "Header",
+      "required": true,
+      "description": "Barra de navegação fixa com a logo, acesso rápido às demais seções da página e CTA de WhatsApp.",
+      "whenToUse": "Sempre incluída; usa nome, logoUrl e whatsapp.",
+      "anchorId": "header",
+      "navLabel": "Cabeçalho",
+      "showInNav": false,
+      "variants": [
+        {
+          "id": "fixed-overlay-nav",
+          "description": "Barra fixa sobreposta ao topo da página, com logo, navegação horizontal no desktop e menu hambúrguer no mobile."
+        }
+      ]
+    },
+    {
+      "name": "Hero",
+      "required": true,
+      "description": "Primeira dobra da página, com o nome do negócio, o segmento e a chamada principal para ação.",
+      "whenToUse": "Sempre incluída; usa nome, segmento e whatsapp para a chamada de ação.",
+      "anchorId": "inicio",
+      "navLabel": "Início",
+      "showInNav": true,
+      "variants": [
+        {
+          "id": "image-background",
+          "description": "Imagem de fundo full-bleed com overlay gradiente e highlights sobrepostos."
+        }
+      ]
+    },
+    {
+      "name": "Produtos ou Serviços",
+      "required": false,
+      "description": "Lista os produtos e/ou serviços oferecidos pelo negócio.",
+      "whenToUse": "Use quando produtos e/ou servicos estiverem preenchidos.",
+      "anchorId": "servicos",
+      "navLabel": "Serviços",
+      "showInNav": true,
+      "variants": [
+        {
+          "id": "image-cards-grid",
+          "description": "Grade de cards com imagem, título, descrição e CTA de WhatsApp individual por item."
+        }
+      ]
+    },
+    {
+      "name": "Banner de Conversão",
+      "required": false,
+      "description": "Bloco de destaque com chamada direta para contato via WhatsApp.",
+      "whenToUse": "Use quando whatsapp estiver preenchido; aproveite mensagemPrincipalWhatsapp se disponível.",
+      "anchorId": "banner-conversao",
+      "navLabel": "Banner de Conversão",
+      "showInNav": false,
+      "variants": [
+        {
+          "id": "solid-primary-banner",
+          "description": "Banner em fundo sólido na cor primária, com headline, subtítulo opcional e CTA de WhatsApp centralizados."
+        }
+      ]
+    },
+    {
+      "name": "Área Atendida",
+      "required": false,
+      "description": "Mostra a cidade, o estado e os bairros/regiões cobertos pelo atendimento.",
+      "whenToUse": "Use quando bairrosERegioesAtendidas estiver preenchido.",
+      "anchorId": "area-atendida",
+      "navLabel": "Área Atendida",
+      "showInNav": false,
+      "variants": []
+    },
+    {
+      "name": "Diferenciais",
+      "required": false,
+      "description": "Destaca os diferenciais do negócio em relação à concorrência.",
+      "whenToUse": "Use quando diferenciaisConfirmados tiver ao menos um item.",
+      "anchorId": "diferenciais",
+      "navLabel": "Diferenciais",
+      "showInNav": true,
+      "variants": [
+        {
+          "id": "icon-grid",
+          "description": "Grade de cards com ícone e título, seguida de CTA de WhatsApp centralizado."
+        }
+      ]
+    },
+    {
+      "name": "Benefícios",
+      "required": false,
+      "description": "Apresenta os principais benefícios que o cliente obtém ao contratar o negócio.",
+      "whenToUse": "Use quando diferenciaisConfirmados, produtos ou servicos tiverem conteúdo suficiente para descrever benefícios concretos; não gere benefícios genéricos sem base nesses campos.",
+      "anchorId": "beneficios",
+      "navLabel": "Benefícios",
+      "showInNav": true,
+      "variants": []
+    },
+    {
+      "name": "Como Funciona",
+      "required": false,
+      "description": "Explica o passo a passo de como contratar ou usar o produto/serviço.",
+      "whenToUse": "Use quando servicos e/ou produtos estiverem preenchidos com detalhe suficiente para descrever um processo.",
+      "anchorId": "como-funciona",
+      "navLabel": "Como Funciona",
+      "showInNav": true,
+      "variants": [
+        {
+          "id": "numbered-timeline",
+          "description": "Linha do tempo numerada — vertical no mobile, horizontal no desktop — com até 4 etapas conectadas."
+        }
+      ]
+    },
+    {
+      "name": "Sobre a Empresa",
+      "required": false,
+      "description": "Conta a proposta e a trajetória da empresa para gerar confiança.",
+      "whenToUse": "Use quando nome, segmento e diferenciaisConfirmados estiverem preenchidos, permitindo montar uma narrativa institucional a partir de dados reais do cliente.",
+      "anchorId": "sobre",
+      "navLabel": "Sobre",
+      "showInNav": true,
+      "variants": [
+        {
+          "id": "text-image-split",
+          "description": "Texto e imagem lado a lado (empilhados no mobile), com CTA de WhatsApp junto ao texto."
+        }
+      ]
+    },
+    {
+      "name": "Galeria",
+      "required": false,
+      "description": "Exibe uma galeria de imagens do negócio, produtos ou ambiente.",
+      "whenToUse": "Use quando imagens tiver ao menos um item.",
+      "anchorId": "galeria",
+      "navLabel": "Galeria",
+      "showInNav": true,
+      "variants": []
+    },
+    {
+      "name": "Prova Social",
+      "required": false,
+      "description": "Mostra avaliações e depoimentos reais de clientes.",
+      "whenToUse": "Use apenas quando houver avaliações reais vinculadas a googleBusinessProfile; sem isso, a seção não deve ser incluída.",
+      "anchorId": "avaliacoes",
+      "navLabel": "Avaliações",
+      "showInNav": true,
+      "variants": [
+        {
+          "id": "review-cards-grid",
+          "description": "Grade de cards de avaliação com estrelas, texto do depoimento e nome do autor."
+        }
+      ]
+    },
+    {
+      "name": "FAQ",
+      "required": false,
+      "description": "Responde às perguntas mais frequentes sobre o negócio, os produtos ou os serviços.",
+      "whenToUse": "Use quando servicos, produtos ou diferenciaisConfirmados tiverem conteúdo suficiente para compor perguntas e respostas relevantes.",
+      "anchorId": "faq",
+      "navLabel": "Perguntas Frequentes",
+      "showInNav": true,
+      "variants": [
+        {
+          "id": "accordion",
+          "description": "Lista de perguntas em accordion, com a barra da pergunta na cor primária e a resposta em fundo branco ao expandir."
+        }
+      ]
+    },
+    {
+      "name": "Localização e Contato",
+      "required": false,
+      "description": "Mostra endereço, mapa e canais de contato do negócio.",
+      "whenToUse": "Use quando enderecoCompleto, googleMaps, telefone ou horario estiverem preenchidos.",
+      "anchorId": "contato",
+      "navLabel": "Contato",
+      "showInNav": true,
+      "variants": [
+        {
+          "id": "map-embed",
+          "description": "Embed do Google Maps em largura total (implementação parcial — ainda sem bloco de endereço/contato ao lado do mapa)."
+        }
+      ]
+    },
+    {
+      "name": "Footer",
+      "required": true,
+      "description": "Rodapé com dados de contato, redes sociais e encerramento institucional da página.",
+      "whenToUse": "Sempre incluída; usa nome e whatsapp, além de instagram e facebook quando preenchidos.",
+      "anchorId": "footer",
+      "navLabel": "Rodapé",
+      "showInNav": false,
+      "variants": [
+        {
+          "id": "three-column",
+          "description": "Rodapé em três colunas (logo/institucional/redes sociais, endereço/horário, contato) com barra inferior de direitos autorais."
+        }
+      ]
+    }
+  ]
+}

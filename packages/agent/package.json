@@ -1,0 +1,21 @@
+{
+  "name": "@prime2b/prime-local-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI orchestrator for Prime Local. Installs the project's rules/commands and the @prime2b/ui-kit manifest/schema into a client project, then drives composition through Claude Code slash commands.",
+  "type": "commonjs",
+  "bin": {
+    "prime-local-agent": "./bin/init.js"
+  },
+  "files": [
+    "bin",
+    "rules",
+    "commands"
+  ],
+  "dependencies": {
+    "fs-extra": "^11.2.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
