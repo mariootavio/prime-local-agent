@@ -13,6 +13,7 @@ export function ConversionBanner({ content }: ConversionBannerProps) {
   const {
     headline,
     subtitle,
+    body,
     nome,
     whatsapp,
     mensagemPrincipalWhatsapp,
@@ -48,6 +49,15 @@ export function ConversionBanner({ content }: ConversionBannerProps) {
             className="mx-auto max-w-150 text-center font-body text-lg text-on-dark/85"
           >
             {subtitle}
+          </FadeInView>
+        )}
+        {body && (
+          <FadeInView
+            as="p"
+            delayMs={150}
+            className="mx-auto max-w-175 text-center font-body text-base text-on-dark/75"
+          >
+            {body}
           </FadeInView>
         )}
         {/* Fixed WhatsApp brand color, never the client's accent token (packages/agent/rules/whatsapp-cta.md). */}

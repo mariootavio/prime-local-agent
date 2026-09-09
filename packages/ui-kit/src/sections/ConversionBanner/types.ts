@@ -1,6 +1,8 @@
 export interface ConversionBannerContent {
   headline: string;
   subtitle?: string;
+  /** Longer supporting paragraph, rendered between subtitle and the CTA. */
+  body?: string;
   /** Used only for the default WhatsApp CTA message when mensagemPrincipalWhatsapp is absent. */
   nome: string;
   whatsapp: string;

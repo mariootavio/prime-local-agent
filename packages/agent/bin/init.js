@@ -17,18 +17,24 @@
  *
  * Per CLAUDE.md ("packages/agent — Never modifies the client
  * application's own source code — its writes are scoped to the
- * rules/commands/config it owns"): every write this script makes
- * lands under .prime-local/ or that one command file. The target
- * project's own package.json is only ever read (to check for
- * @prime2b/ui-kit), never written — missing the dependency is
- * reported, not auto-installed. If .claude/commands/ (or the
- * prime-local/ subfolder) already has other commands in it, only
- * create.md — the file this package owns — is touched.
+ * rules/commands/config it owns, [and it] verifies/installs
+ * @prime2b/ui-kit as a dependency"): every write this script makes
+ * either lands under .prime-local/, that one command file, or is the
+ * dependency install below. The target project's own package.json is
+ * read to check for @prime2b/ui-kit; if missing, it's installed with
+ * `npm install` straight from vendor/ui-kit.tgz — the tarball this
+ * package ships embedded in itself (built by scripts/build-vendor.js
+ * on prepack) — so no registry access and no second manual command
+ * are needed. No other project file is ever touched, and if
+ * .claude/commands/ (or the prime-local/ subfolder) already has other
+ * commands in it, only create.md — the file this package owns — is
+ * touched there.
  */
 
 const path = require("path");
 const fs = require("fs");
 const fse = require("fs-extra");
+const { execSync } = require("child_process");
 
 const AGENT_DIR = path.resolve(__dirname, "..");
 const TARGET_DIR = process.cwd();
@@ -46,6 +52,7 @@ const CLAUDE_COMMAND_RELATIVE_PATH = path.join(
 );
 
 const UI_KIT_PACKAGE_NAME = "@prime2b/ui-kit";
+const VENDOR_TARBALL_PATH = path.join(AGENT_DIR, "vendor", "ui-kit.tgz");
 
 /**
  * Locates the installed @prime2b/ui-kit package directory so its
@@ -97,6 +104,29 @@ function checkUiKitDependency() {
 }
 
 /**
+ * Installs @prime2b/ui-kit into the target project straight from the
+ * tarball vendored inside this package (vendor/ui-kit.tgz, resolved
+ * via __dirname/AGENT_DIR so it works regardless of where this
+ * package itself was installed) — no registry lookup, no interactive
+ * prompt, no separate manual `npm install` step for the user.
+ */
+function installUiKitFromVendor() {
+  if (!fs.existsSync(VENDOR_TARBALL_PATH)) {
+    return { installed: false, reason: "vendor-missing" };
+  }
+
+  try {
+    execSync(`npm install "${VENDOR_TARBALL_PATH}"`, {
+      cwd: TARGET_DIR,
+      stdio: "inherit",
+    });
+    return { installed: true };
+  } catch {
+    return { installed: false, reason: "install-failed" };
+  }
+}
+
+/**
  * Copies srcPath -> destPath (file or directory) and records the
  * result in summary, keyed by destPath's path relative to TARGET_DIR
  * — that relative path IS the label, so the printed summary is
@@ -134,6 +164,10 @@ function printUsage() {
     "  - .claude/commands/prime-local/create.md — o gatilho do"
   );
   console.log("    slash command /prime-local:create.");
+  console.log(
+    `Também instala automaticamente ${UI_KIT_PACKAGE_NAME} (a partir do`
+  );
+  console.log("pacote embutido) quando ele ainda não é dependência do projeto.");
   console.log("Não modifica nenhum outro arquivo do projeto.");
 }
 
@@ -182,21 +216,34 @@ function runInit() {
 
   const depCheck = checkUiKitDependency();
   console.log();
+  let installResult = null;
   if (depCheck.found) {
     console.log(
       `✓ ${UI_KIT_PACKAGE_NAME} já está listado nas dependências deste projeto.`
     );
-  } else if (depCheck.reason === "no-package-json") {
-    console.warn(`Aviso: nenhum package.json encontrado em ${TARGET_DIR}.`);
-    console.warn(`Rode "npm init" e depois:  npm install ${UI_KIT_PACKAGE_NAME}`);
   } else if (depCheck.reason === "invalid-package-json") {
     console.warn(
       `Aviso: não foi possível ler o package.json em ${TARGET_DIR} (JSON inválido).`
     );
     console.warn(`Verifique manualmente se ${UI_KIT_PACKAGE_NAME} está instalado.`);
   } else {
-    console.warn(`Aviso: ${UI_KIT_PACKAGE_NAME} não está nas dependências deste projeto.`);
-    console.warn(`Instale com:  npm install ${UI_KIT_PACKAGE_NAME}`);
+    console.log(
+      `${UI_KIT_PACKAGE_NAME} não está nas dependências deste projeto — instalando automaticamente...`
+    );
+    installResult = installUiKitFromVendor();
+    if (installResult.installed) {
+      console.log(
+        `✓ ${UI_KIT_PACKAGE_NAME} instalado a partir do pacote embutido em vendor/ui-kit.tgz.`
+      );
+    } else if (installResult.reason === "vendor-missing") {
+      console.warn(
+        `Aviso: pacote embutido de ${UI_KIT_PACKAGE_NAME} não encontrado (${VENDOR_TARBALL_PATH}).`
+      );
+      console.warn(`Instale manualmente com:  npm install ${UI_KIT_PACKAGE_NAME}`);
+    } else {
+      console.warn(`Aviso: falha ao instalar ${UI_KIT_PACKAGE_NAME} automaticamente.`);
+      console.warn(`Instale manualmente com:  npm install ${UI_KIT_PACKAGE_NAME}`);
+    }
   }
 
   console.log();
@@ -207,11 +254,24 @@ function runInit() {
   for (const item of summary.skipped) {
     console.log(`  ✗ não copiado: ${item}`);
   }
+  if (installResult) {
+    console.log(
+      installResult.installed
+        ? `  ✓ dependência instalada: ${UI_KIT_PACKAGE_NAME} (a partir de vendor/ui-kit.tgz)`
+        : `  ✗ dependência não instalada: ${UI_KIT_PACKAGE_NAME}`
+    );
+  }
   console.log();
   if (commandInstalled) {
     console.log("Comando disponível: /prime-local:create");
   }
-  console.log("Nenhum outro arquivo do projeto foi modificado.");
+  if (installResult && installResult.installed) {
+    console.log(
+      `Nenhum outro arquivo do projeto foi modificado — a única exceção é a instalação automática de ${UI_KIT_PACKAGE_NAME} acima (package.json/package-lock.json/node_modules).`
+    );
+  } else {
+    console.log("Nenhum outro arquivo do projeto foi modificado.");
+  }
 }
 
 function main() {

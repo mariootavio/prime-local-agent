@@ -27,6 +27,8 @@ export const mockPrimeLocal = {
   cidade: "São José do Rio Preto",
   estado: "SP",
   enderecoCompleto: "R. Independência, 3582 - São José do Rio Preto/SP",
+  aboutText:
+    "Agência de marketing digital especializada em atrair e converter clientes para negócios locais.",
   whatsapp: "5517996590760",
   mensagemPrincipalWhatsapp:
     "Olá, gostaria de saber mais sobre o serviço da Prime2B",
@@ -159,6 +161,8 @@ export const mockProductsServices: ProductsServicesContent = {
 /**
  * Placeholder editorial copy (Lorem Ipsum) — same reasoning as
  * mockHero. `icon` keys into the registry in Differentiators.tsx.
+ * One item (`award`) is left without `description` on purpose, to
+ * keep exercising the no-description layout alongside the filled one.
  */
 export const mockDifferentiators: DifferentiatorsContent = {
   heading: "Nossos Diferenciais",
@@ -168,9 +172,21 @@ export const mockDifferentiators: DifferentiatorsContent = {
   whatsapp: mockPrimeLocal.whatsapp,
   mensagemPrincipalWhatsapp: mockPrimeLocal.mensagemPrincipalWhatsapp,
   items: [
-    { icon: "shield", title: "Lorem Ipsum Dolor" },
-    { icon: "clock", title: "Sit Amet Consectetur" },
-    { icon: "users", title: "Adipiscing Elit Sed" },
+    {
+      icon: "shield",
+      title: "Lorem Ipsum Dolor",
+      description: "Sit amet consectetur adipiscing elit sed do eiusmod.",
+    },
+    {
+      icon: "clock",
+      title: "Sit Amet Consectetur",
+      description: "Adipiscing elit sed do eiusmod tempor incididunt.",
+    },
+    {
+      icon: "users",
+      title: "Adipiscing Elit Sed",
+      description: "Do eiusmod tempor incididunt ut labore et dolore.",
+    },
     { icon: "award", title: "Do Eiusmod Tempor" },
   ],
 };
@@ -183,6 +199,7 @@ export const mockConversionBanner: ConversionBannerContent = {
   headline: "Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit",
   subtitle:
     "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam.",
+  body: "Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit.",
   nome: mockPrimeLocal.nome,
   whatsapp: mockPrimeLocal.whatsapp,
   mensagemPrincipalWhatsapp: mockPrimeLocal.mensagemPrincipalWhatsapp,
@@ -326,6 +343,7 @@ export const mockFooter: FooterContent = {
   nome: mockPrimeLocal.nome,
   logoUrl: mockPrimeLocal.logoUrl,
   whatsapp: mockPrimeLocal.whatsapp,
+  aboutText: mockPrimeLocal.aboutText,
   enderecoCompleto: mockPrimeLocal.enderecoCompleto,
   horario: mockPrimeLocal.horario,
   email: mockPrimeLocal.email,

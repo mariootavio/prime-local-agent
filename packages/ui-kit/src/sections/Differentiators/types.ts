@@ -2,6 +2,8 @@ export interface DifferentiatorItem {
   /** Key into the icon registry in Differentiators.tsx (e.g. "shield", "clock"). */
   icon: string;
   title: string;
+  /** Support copy rendered below the title in the card. */
+  description?: string;
 }
 
 export interface DifferentiatorsContent {

@@ -10,8 +10,12 @@
   "files": [
     "bin",
     "rules",
-    ".claude"
+    ".claude",
+    "vendor"
   ],
+  "scripts": {
+    "prepack": "node scripts/build-vendor.js"
+  },
   "dependencies": {
     "fs-extra": "^11.2.0"
   },

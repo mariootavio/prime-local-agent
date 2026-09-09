@@ -17,22 +17,33 @@ verdade; não redefina o conteúdo delas aqui.
 
 ## 1. Entrevista
 
-Peça ao usuário, **nesta ordem**:
+**Regra obrigatória: uma pergunta por vez.** Faça **uma única**
+pergunta, aguarde a resposta do usuário nessa mesma conversa, e só
+então avance para a próxima. **Nunca** apresente duas ou mais das 6
+perguntas abaixo na mesma mensagem — mesmo que pareçam relacionadas
+entre si (ex: cores e redes sociais, ou Maps e imagens). Cada uma é
+um turno de conversa separado, com resposta do usuário antes de
+prosseguir para a seguinte.
 
-1. **Logo** (arquivo de imagem).
-2. **Redes sociais** — Instagram e Facebook (URL ou @).
-3. **Link do Google Maps** da localização do negócio.
-4. **Documento de briefing** (PDF ou texto) — já deve trazer o
-   conteúdo escrito das seções (headlines, descrições, diferenciais
-   etc.), não apenas dados brutos.
+Ordem fixa, sem pular nem antecipar:
 
-### Cores
+### Pergunta 1 — Logo
 
-Depois do briefing, pergunte ao usuário se ele quer:
+Peça o arquivo da logo. Aguarde o envio antes de prosseguir para a
+Pergunta 2 — ela depende da logo já estar em mãos.
+
+### Pergunta 2 — Cores
+
+Só faça esta pergunta depois de a logo (Pergunta 1) já ter sido
+recebida — a opção de extração automática depende dela; nunca
+pergunte sobre cores antes disso.
+
+Pergunte se o usuário quer:
 
 - fornecer a cor **primária** e a cor **secundária** manualmente
   (hex), ou
-- deixá-las serem **extraídas automaticamente a partir da logo**.
+- deixá-las serem **extraídas automaticamente a partir da logo** já
+  enviada na Pergunta 1.
 
 Registre a escolha em `cores.colorSource` (`"manual"` ou `"logo"`)
 em `prime-local.json`. `cores.accent`, quando o usuário não fornecer
@@ -46,6 +57,43 @@ claro/escuro não é um dado de cliente — é sempre
 sistema (`packages/ui-kit/src/styles/tokens.css` na origem do UI
 Kit). `cores.text`, quando o schema aceitar, é opcional e não deve
 ser solicitado ao usuário nesta entrevista.
+
+### Pergunta 3 — Redes sociais
+
+Pergunte Instagram e Facebook (URL ou @).
+
+### Pergunta 4 — Google Maps
+
+Pergunte o link do Google Maps da localização do negócio.
+
+### Pergunta 5 — Imagens gerais do site
+
+Pergunte por imagens gerais do negócio — fotos do ambiente, da
+equipe, de produtos etc. — para uso em seções como Galeria e Sobre
+Nós (`imagens` em `prime-local.json`). Deixe claro ao usuário que
+esta pergunta é **opcional**.
+
+Se o cliente não tiver imagens próprias: o agente **nunca** inventa,
+gera ou busca imagens de banco externo para substituí-las. Registre
+a ausência como pendência a reportar no checkpoint final (passo 6),
+mesma regra de dado ausente de `./content-rules.md`. Onde uma seção
+depende dessas imagens via `whenToUse` (ex: Galeria), a ausência
+simplesmente exclui a seção da composição (passo 3, abaixo); onde a
+seção entra na composição por outros dados mas usaria uma imagem que
+não veio (ex: a foto ao lado do texto em Sobre Nós), use um
+placeholder visível no lugar da imagem em vez de inventar uma.
+
+### Pergunta 6 — Briefing
+
+Peça o documento de briefing (PDF ou texto) — já deve trazer o
+conteúdo escrito das seções (headlines, descrições, diferenciais
+etc.), não apenas dados brutos.
+
+Esta é a última das 6 perguntas. Depois de receber a resposta, siga
+direto para os passos 2–6 abaixo (leitura do briefing, preenchimento
+do `prime-local.json`, seleção de seções, variantes, composição e
+checkpoint) — **sem nenhuma pausa ou pergunta intermediária** além
+das 6 acima.
 
 ## 2. Preencher `prime-local.json`
 
@@ -95,14 +143,95 @@ Trocar entre variantes já existentes é seleção (Strict Compose);
 nunca crie uma variante nova nesta etapa (isso é Extend — ver
 `./variants.md` e a regra de Strict Compose vs. Extend do projeto).
 
-## 5. Composição, CTAs e SEO
+## 5. Composição real do projeto
 
-Ao montar a página:
+Modo padrão é **Strict Compose**: componha só com o que já existe no
+UI Kit. Extend só se explicitamente pedido pelo usuário. Os passos
+abaixo escrevem de fato os arquivos do projeto-alvo — diferente do
+resto deste fluxo (que só lê/preenche `prime-local.json`), a partir
+daqui o agente passa a gerar código da aplicação do cliente.
 
-- Siga `./whatsapp-cta.md` para todo CTA/link de WhatsApp.
-- Siga `./seo-head.md` para title, meta tags e JSON-LD.
-- Modo padrão é **Strict Compose**: componha só com o que já existe
-  no UI Kit. Extend só se explicitamente pedido pelo usuário.
+### 5.1 Scaffold Next.js
+
+Verifique se já existe um projeto Next.js no diretório atual — o
+mesmo em que `/prime-local:create` está rodando (presença de
+`next.config.*` e/ou `next` em `dependencies`/`devDependencies` do
+`package.json` local). Se existir, não mexa no scaffold — só siga
+para 5.2.
+
+Se não existir, crie um scaffold básico (App Router, TypeScript,
+Tailwind) **neste mesmo diretório** — o projeto do cliente é este
+diretório, nunca uma subpasta nova (`npx create-next-app@latest .`,
+com as flags equivalentes a App Router + TypeScript + Tailwind +
+sem `src/`, de forma não-interativa). Este diretório já contém
+`.prime-local/`, `.claude/` e `prime-local.json` (criados pelo `init`
+e pela entrevista) antes do scaffold rodar — se a ferramenta de
+scaffold recusar um diretório não vazio, mova esses itens para fora
+temporariamente, rode o scaffold, e devolva-os exatamente como
+estavam; nunca delete ou sobrescreva conteúdo já existente no
+diretório que não seja gerado por este próprio passo.
+
+### 5.2 Dependência do UI Kit
+
+Confirme que `@prime2b/ui-kit` está em `dependencies` do
+`package.json` deste projeto. Isso já deveria ter sido feito por
+`npx prime-local-agent init` (via `packages/agent/bin/init.js`,
+instalando automaticamente a partir do tarball embutido no pacote do
+agent). Se por algum motivo ainda estiver ausente, rode
+`prime-local-agent init` novamente antes de prosseguir — não
+prossiga a composição sem essa dependência resolvida.
+
+### 5.3 Copiar assets recebidos para `public/`
+
+Copie o logo (Pergunta 1) e as imagens gerais (Pergunta 5, quando
+fornecidas) para `public/` deste projeto, com nomes de arquivo
+estáveis e sem espaços/acentos (ex: `public/logo.png`,
+`public/imagem-1.jpg`, `public/imagem-2.jpg`). Depois, atualize
+`logoUrl` e `imagens` em `prime-local.json` para os caminhos
+públicos reais dentro de `public/` (ex: `/logo.png`), substituindo
+qualquer placeholder usado durante a entrevista. O conteúdo desses
+campos nunca fica apontando para um arquivo temporário da conversa —
+só para o caminho final servido pelo Next.js.
+
+### 5.4 Página principal
+
+Gere `app/page.tsx` (ou equivalente) importando e renderizando cada
+seção de `@prime2b/ui-kit/sections/<Section>`, na mesma ordem em que
+aparecem em `../ui-kit.manifest.json`, incluindo **apenas** as
+seções decididas no passo 3 — nunca todas as seções do manifest, nem
+uma ordem diferente da do manifest. Cada seção recebe `content`
+montado a partir dos campos de topo de `prime-local.json` e da
+entrada correspondente em `sections` (passo 2). O menu do Header usa
+**todas** as seções incluídas com `showInNav: true` (regra "Menu do
+Header" de `./content-rules.md`) — nunca um subconjunto fixo como o
+usado no mock de desenvolvimento do playground.
+
+### 5.5 SEO e head
+
+Aplique `./seo-head.md` em `app/layout.tsx` (ou equivalente): tags
+básicas (`title`, meta description, canonical, Open Graph, Twitter
+Card, favicon) via a API de metadata do Next.js, e o JSON-LD
+(`LocalBusiness`/subtipo, `Organization`, `WebSite`, `WebPage`, e
+`FAQPage`/`AggregateRating`+`Review` só quando as condições daquele
+arquivo forem satisfeitas) num `<script type="application/ld+json">`
+no head. Usar somente campos confirmados de `prime-local.json`, como
+já descrito naquele arquivo.
+
+### 5.6 Botão flutuante de WhatsApp
+
+Aplique `./whatsapp-cta.md` ao `WhatsAppFloatingButton`: monte-o uma
+única vez em `app/layout.tsx` (elemento global, fora do fluxo de
+seções condicionais), alimentado por `whatsapp`, `nome` e
+`mensagemPrincipalWhatsapp` de `prime-local.json`.
+
+### 5.7 Rodar e expor o preview local
+
+Rode `npm run dev` neste projeto. Confirme que o servidor subiu (sem
+travar em erro de build) e informe ao usuário a URL local para
+visualizar o resultado (tipicamente `http://localhost:3000`, ou a
+porta que o Next.js realmente usar caso a 3000 esteja ocupada) — essa
+URL faz parte do checkpoint final do passo 6, junto com o resumo de
+pendências.
 
 ## 6. Checkpoint final
 
@@ -110,8 +239,11 @@ Antes de considerar a criação concluída, apresente ao usuário:
 
 - Um resumo do que foi gerado (seções incluídas, variante de cada
   uma, origem das cores).
+- A URL local do preview rodando (passo 5.7), para revisão visual.
 - Toda pendência encontrada — dado ausente preenchido com
   placeholder, avaliações reais não obtidas para Prova Social, a
   observação de schema do passo 2, etc.
 
-Nada é commitado antes dessa aprovação explícita do usuário.
+Nada é commitado antes dessa aprovação explícita do usuário — a
+composição fica pronta, rodando localmente, para revisão visual no
+preview acima antes de qualquer commit.

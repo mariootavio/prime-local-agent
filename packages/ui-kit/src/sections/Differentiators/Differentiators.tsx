@@ -80,6 +80,11 @@ export function Differentiators({ content }: DifferentiatorsProps) {
                 <h3 className="font-title text-lg font-semibold text-[var(--color-primary)]">
                   {item.title}
                 </h3>
+                {item.description && (
+                  <p className="font-body text-sm text-text">
+                    {item.description}
+                  </p>
+                )}
               </FadeInView>
             );
           })}

@@ -2,6 +2,13 @@ export interface FooterContent {
   nome: string;
   logoUrl: string;
   whatsapp: string;
+  /**
+   * Short institutional blurb rendered under the logo. When absent,
+   * a generic structural placeholder is used instead (see
+   * packages/agent/rules/content-rules.md) — never Lorem Ipsum or an
+   * invented factual claim about the business.
+   */
+  aboutText?: string;
   enderecoCompleto?: string;
   horario?: string;
   email?: string;

@@ -17,6 +17,7 @@ export function Footer({ content }: FooterProps) {
     nome,
     logoUrl,
     whatsapp,
+    aboutText,
     enderecoCompleto,
     horario,
     email,
@@ -44,13 +45,14 @@ export function Footer({ content }: FooterProps) {
             className="h-8 w-auto"
           />
           {/*
-            Placeholder copy — no briefing field for a short institutional
-            blurb exists in prime-local.schema.json yet. Swap this for a
-            real content field once one is defined.
+            Structural fallback per content-rules.md "Preenchimento
+            estrutural permitido": generic transition copy, no factual
+            claim about the business, used only when the client's
+            briefing didn't supply aboutText.
           */}
           <p className="max-w-xs font-body text-sm text-on-dark/70">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {aboutText ??
+              "Entre em contato pelos canais abaixo para saber mais."}
           </p>
           {hasSocialLinks && (
             <div className="flex items-center gap-4">

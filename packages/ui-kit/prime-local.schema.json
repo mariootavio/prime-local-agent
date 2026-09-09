@@ -48,6 +48,10 @@
       "type": "string",
       "description": "Mensagem pré-preenchida enviada ao clicar nos CTAs de WhatsApp."
     },
+    "aboutText": {
+      "type": "string",
+      "description": "Texto institucional curto sobre o negócio, usado na seção Footer."
+    },
     "horario": {
       "type": "string",
       "description": "Horário de funcionamento."

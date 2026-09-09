@@ -184,7 +184,7 @@
       "name": "Footer",
       "required": true,
       "description": "Rodapé com dados de contato, redes sociais e encerramento institucional da página.",
-      "whenToUse": "Sempre incluída; usa nome e whatsapp, além de instagram e facebook quando preenchidos.",
+      "whenToUse": "Sempre incluída; usa nome e whatsapp, além de aboutText, instagram e facebook quando preenchidos.",
       "anchorId": "footer",
       "navLabel": "Rodapé",
       "showInNav": false,
