@@ -40,10 +40,11 @@ nas dependências do projeto, o comando avisa e sugere como instalar
   (mesma referência acima). Trocar entre variantes já existentes de
   uma seção continua sendo Strict Compose — só criar uma variante
   nova é Extend (`packages/agent/rules/variants.md`).
-- **Restyle** — ajuste visual pontual, sob pedido explícito.
-  *(Placeholder: este modo ainda não tem um arquivo de regras em
-  `packages/agent/rules/` — precisa ser escrito antes desta seção
-  poder descrever o comportamento real.)*
+- **Restyle** — ajuste visual significativo numa seção já presente na
+  composição, sob pedido explícito, através dos parâmetros que a
+  seção já expõe (`cores`, `variant`, campos do `*Content`) — nunca
+  cria estrutura nova (isso é Extend) nem edita o código-fonte
+  compartilhado do UI Kit (`packages/agent/rules/restyle.md`).
 
 ## Catálogo de seções
 

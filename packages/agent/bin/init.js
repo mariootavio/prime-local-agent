@@ -8,26 +8,45 @@
  * manifest/schema into the target project (the directory this is run
  * from), inside a single owned reference folder: <target>/.prime-local/.
  *
- * The one file this also writes outside that folder is the slash
- * command trigger, at <target>/.claude/commands/prime-local/create.md
- * — that's the directory Claude Code actually scans to discover slash
- * commands, so the trigger has to live there to be found. Its content
- * just points back at .prime-local/ (see rules/create-flow.md) rather
- * than duplicating any logic.
+ * The other files this also writes outside .prime-local/ are:
+ *   - the slash command triggers, at
+ *     <target>/.claude/commands/prime-local/create.md and
+ *     <target>/.claude/commands/prime-local/ajustes.md
+ *   - the ai-seo, seo-audit and frontend-design skills, at
+ *     <target>/.claude/skills/<name>/ for each
+ * `.claude/commands/` and `.claude/skills/` are the directories
+ * Claude Code actually scans to discover slash commands and skills
+ * respectively — confirmed for skills by grepping the installed
+ * `@anthropic-ai/claude-code` CLI binary itself for the literal
+ * pattern, which contains ".claude/skills/<name>/SKILL.md" (and a
+ * nested-plugin variant) and no ".agents/skills" equivalent
+ * anywhere — the same way `.claude/commands/` was confirmed for slash
+ * commands. This repo's own `.agents/skills/` + `.claude/skills/`
+ * (symlinked into it) setup, from the `skills.sh` installer, is
+ * consistent with that: `.agents/skills/` is that tool's own
+ * vendor-neutral store, `.claude/skills/` is what Claude Code reads.
+ * Real (non-symlink) copies of those three skills' folders ship
+ * inside this package at skills/ — see package.json "files" — since a
+ * symlink wouldn't survive `npm pack`/`npm install` into an unrelated
+ * target project. The command triggers' content just points back at
+ * .prime-local/ (see rules/create-flow.md and
+ * rules/adjustments-flow.md) rather than duplicating any logic; the
+ * skills are copied whole, unmodified.
  *
  * Per CLAUDE.md ("packages/agent — Never modifies the client
  * application's own source code — its writes are scoped to the
  * rules/commands/config it owns, [and it] verifies/installs
  * @prime2b/ui-kit as a dependency"): every write this script makes
- * either lands under .prime-local/, that one command file, or is the
- * dependency install below. The target project's own package.json is
- * read to check for @prime2b/ui-kit; if missing, it's installed with
- * `npm install` straight from vendor/ui-kit.tgz — the tarball this
- * package ships embedded in itself (built by scripts/build-vendor.js
- * on prepack) — so no registry access and no second manual command
- * are needed. No other project file is ever touched, and if
- * .claude/commands/ (or the prime-local/ subfolder) already has other
- * commands in it, only create.md — the file this package owns — is
+ * either lands under .prime-local/, one of the .claude/ paths above,
+ * or is the dependency install below. The target project's own
+ * package.json is read to check for @prime2b/ui-kit; if missing,
+ * it's installed with `npm install` straight from vendor/ui-kit.tgz —
+ * the tarball this package ships embedded in itself (built by
+ * scripts/build-vendor.js on prepack) — so no registry access and no
+ * second manual command are needed. No other project file is ever
+ * touched, and if .claude/commands/ or .claude/skills/ already have
+ * other commands/skills in them, only the entries this package owns
+ * (create.md, ajustes.md, ai-seo/, seo-audit/, frontend-design/) are
  * touched there.
  */
 
@@ -42,14 +61,25 @@ const INSTALL_DIR = path.join(TARGET_DIR, ".prime-local");
 
 // Mirrors, on both ends, the path Claude Code actually scans for slash
 // commands (<project>/.claude/commands/<namespace>/<name>.md) — the
-// package's own source is laid out the same way so the copy below is
+// package's own source is laid out the same way so each copy below is
 // a straight one-file copy, no path synthesis.
-const CLAUDE_COMMAND_RELATIVE_PATH = path.join(
-  ".claude",
-  "commands",
-  "prime-local",
-  "create.md"
-);
+const CLAUDE_COMMANDS = [
+  {
+    slashCommand: "/prime-local:create",
+    relativePath: path.join(".claude", "commands", "prime-local", "create.md"),
+  },
+  {
+    slashCommand: "/prime-local:ajustes",
+    relativePath: path.join(".claude", "commands", "prime-local", "ajustes.md"),
+  },
+];
+
+// Same idea, for skills: <project>/.claude/skills/<name>/SKILL.md is
+// the path Claude Code scans to discover project-level skills (see
+// the file-header comment above for how that was confirmed). Each
+// name here must have a matching folder shipped at
+// packages/agent/skills/<name>/ (see package.json "files").
+const SKILL_NAMES = ["ai-seo", "seo-audit", "frontend-design"];
 
 const UI_KIT_PACKAGE_NAME = "@prime2b/ui-kit";
 const VENDOR_TARBALL_PATH = path.join(AGENT_DIR, "vendor", "ui-kit.tgz");
@@ -161,9 +191,20 @@ function printUsage() {
   );
   console.log("    ui-kit.manifest.json (base de referência);");
   console.log(
-    "  - .claude/commands/prime-local/create.md — o gatilho do"
+    "  - .claude/commands/prime-local/create.md e ajustes.md — os"
   );
-  console.log("    slash command /prime-local:create.");
+  console.log(
+    "    gatilhos de /prime-local:create e /prime-local:ajustes;"
+  );
+  console.log(
+    "  - .claude/skills/ai-seo/ e .claude/skills/seo-audit/ — para"
+  );
+  console.log(
+    "    auditoria de SEO sob demanda; .claude/skills/frontend-design/"
+  );
+  console.log(
+    "    — para decisões de Extend/Restyle (nunca Strict Compose)."
+  );
   console.log(
     `Também instala automaticamente ${UI_KIT_PACKAGE_NAME} (a partir do`
   );
@@ -195,15 +236,28 @@ function runInit() {
     summary
   );
 
-  // The slash command trigger — the only write outside .prime-local/.
-  // A single-file copy, so any other commands already sitting in
+  // The slash command triggers — writes outside .prime-local/. Each a
+  // single-file copy, so any other commands already sitting in
   // .claude/commands/ (or a prime-local/ subfolder with commands of
   // its own) are left untouched.
-  const commandInstalled = copyIfExists(
-    path.join(AGENT_DIR, CLAUDE_COMMAND_RELATIVE_PATH),
-    path.join(TARGET_DIR, CLAUDE_COMMAND_RELATIVE_PATH),
-    summary
+  const installedCommands = CLAUDE_COMMANDS.filter(({ relativePath }) =>
+    copyIfExists(
+      path.join(AGENT_DIR, relativePath),
+      path.join(TARGET_DIR, relativePath),
+      summary
+    )
   );
+
+  // The bundled skills — each a whole-folder copy into
+  // .claude/skills/<name>/, so any other skills already installed
+  // there (by skills.sh or otherwise) are left untouched.
+  for (const skillName of SKILL_NAMES) {
+    copyIfExists(
+      path.join(AGENT_DIR, "skills", skillName),
+      path.join(TARGET_DIR, ".claude", "skills", skillName),
+      summary
+    );
+  }
 
   if (!uiKitDir) {
     console.warn(
@@ -262,8 +316,8 @@ function runInit() {
     );
   }
   console.log();
-  if (commandInstalled) {
-    console.log("Comando disponível: /prime-local:create");
+  for (const { slashCommand } of installedCommands) {
+    console.log(`Comando disponível: ${slashCommand}`);
   }
   if (installResult && installResult.installed) {
     console.log(

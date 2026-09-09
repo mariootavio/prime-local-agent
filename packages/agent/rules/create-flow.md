@@ -25,6 +25,21 @@ entre si (ex: cores e redes sociais, ou Maps e imagens). Cada uma é
 um turno de conversa separado, com resposta do usuário antes de
 prosseguir para a seguinte.
 
+**Formato: opções sempre que o conjunto de respostas for limitado e
+conhecido.** Qualquer pergunta com um conjunto fechado de respostas
+possíveis — binária (sim/não) ou de escolha entre alternativas
+específicas — usa o mecanismo de seleção por opções do Claude Code
+(ex: a tool `AskUserQuestion`), nunca uma pergunta de texto livre
+corrido esperando que o usuário digite a resposta certa. Isso vale
+para a Pergunta 2 (cores) abaixo e para o passo de mapeamento de
+imagens da Pergunta 5. Só ficam em formato aberto (texto livre ou
+anexo de arquivo) as perguntas cuja resposta não é uma escolha entre
+alternativas conhecidas: Pergunta 1 (logo), Pergunta 3 (redes
+sociais), Pergunta 4 (Google Maps) e Pergunta 6 (briefing) — a
+Pergunta 5 (imagens) também é anexo de arquivo em si, mesmo com seu
+sub-passo de mapeamento em opções. A mesma regra de formato vale para
+`./adjustments-flow.md`.
+
 Ordem fixa, sem pular nem antecipar:
 
 ### Pergunta 1 — Logo
@@ -32,13 +47,23 @@ Ordem fixa, sem pular nem antecipar:
 Peça o arquivo da logo. Aguarde o envio antes de prosseguir para a
 Pergunta 2 — ela depende da logo já estar em mãos.
 
+Assim que o arquivo for anexado, identifique e registre seu caminho
+local real (o anexo em si, não uma descrição dele) — é essa
+referência que o passo 5.3 usa para copiar o arquivo para `public/`
+e apontar `logoUrl` para o caminho público real. A logo aparecer
+copiada em `public/` e referenciada em `logoUrl` ao final da
+composição não é uma pendência opcional: se o arquivo foi recebido
+aqui e isso não acontecer, é erro crítico a corrigir antes do
+checkpoint (passo 6) — nunca um item da lista de pendências.
+
 ### Pergunta 2 — Cores
 
 Só faça esta pergunta depois de a logo (Pergunta 1) já ter sido
 recebida — a opção de extração automática depende dela; nunca
 pergunte sobre cores antes disso.
 
-Pergunte se o usuário quer:
+Pergunte, em formato de opções (não texto livre — ver regra de
+formato acima), se o usuário quer:
 
 - fornecer a cor **primária** e a cor **secundária** manualmente
   (hex), ou
@@ -73,6 +98,30 @@ equipe, de produtos etc. — para uso em seções como Galeria e Sobre
 Nós (`imagens` em `prime-local.json`). Deixe claro ao usuário que
 esta pergunta é **opcional**.
 
+**Mapeamento explícito, obrigatório antes de prosseguir para a
+Pergunta 6.** Nomes de arquivo de imagem recebidos em uma entrevista
+real costumam ser genéricos (`IMG_0001.jpg`, `foto.jpg`,
+`WhatsApp Image 2024...jpeg`) e a ordem de envio não é confiável —
+**nunca** infira a qual seção ou item cada imagem se destina pelo
+nome do arquivo ou pela posição em que chegou. Assim que os arquivos
+forem recebidos (e antes de seguir para a Pergunta 6):
+
+1. Apresente ao usuário a lista das imagens recebidas — nome do
+   arquivo e, quando o canal de conversa suportar, uma miniatura de
+   contexto de cada uma.
+2. Pergunte explicitamente, em formato de opções por imagem (não
+   texto livre — ver regra de formato no início da Entrevista, acima
+   — as alternativas são as seções/itens já sustentados pelo que se
+   sabe do negócio até aqui, um conjunto fechado e conhecido), a qual
+   seção/item de conteúdo cada imagem se destina (ex: "imagem 1 =
+   fundo do Hero, imagem 2 = card Buffet e Gastronomia, imagem 3 =
+   card Feiras...").
+3. Registre esse mapeamento (arquivo recebido → seção/item de
+   destino) — é isso que o passo 5.3 usa para copiar cada arquivo
+   para o caminho `public/` certo e escrever o campo de imagem certo
+   dentro de `sections` em `prime-local.json`, em vez de só despejar
+   tudo na lista genérica `imagens`.
+
 Se o cliente não tiver imagens próprias: o agente **nunca** inventa,
 gera ou busca imagens de banco externo para substituí-las. Registre
 a ausência como pendência a reportar no checkpoint final (passo 6),
@@ -80,8 +129,21 @@ mesma regra de dado ausente de `./content-rules.md`. Onde uma seção
 depende dessas imagens via `whenToUse` (ex: Galeria), a ausência
 simplesmente exclui a seção da composição (passo 3, abaixo); onde a
 seção entra na composição por outros dados mas usaria uma imagem que
-não veio (ex: a foto ao lado do texto em Sobre Nós), use um
-placeholder visível no lugar da imagem em vez de inventar uma.
+não veio (ex: a foto ao lado do texto em Sobre Nós), **deixe o campo
+de imagem ausente** (`imageUrl`/`backgroundImageUrl` omitido em
+`sections`, nunca uma string vazia) — é o componente do UI Kit que
+renderiza o placeholder `"(imagem pendente)"` internamente quando o
+campo falta. **Nunca gere um arquivo de imagem** (SVG/PNG) para
+representar essa ausência — ver `./content-rules.md`, "Placeholder de
+imagem ausente nunca é um arquivo gerado", inclusive o risco real de
+o mesmo arquivo fabricado acabar reaproveitado em mais de uma seção.
+
+**O placeholder `"(imagem pendente)"` só é usado quando o usuário
+disser explicitamente que não tem aquela imagem.** Imagem que foi de
+fato enviada mas ainda não tem seção/item definido nunca vira
+`"(imagem pendente)"` por omissão — volte e complete o passo de
+mapeamento acima (item 2) antes de considerar essa pergunta
+encerrada.
 
 ### Pergunta 6 — Briefing
 
@@ -110,11 +172,16 @@ Leia o briefing e preencha `prime-local.json` seguindo
   1:1 para os componentes do UI Kit que vão consumi-lo (mesma forma
   do `*Content` de cada seção em
   `packages/ui-kit/src/sections/<Section>/types.ts` na origem do UI
-  Kit). Para qualquer slot de seção sem conteúdo correspondente no
-  briefing, aplique a regra de **preenchimento estrutural** de
-  `./content-rules.md` — texto de transição genérico permitido
-  apenas quando não fizer nenhuma alegação factual sobre o negócio;
-  o conteúdo que o cliente já escreveu nunca é alterado ou reescrito.
+  Kit). Para um slot de **subheadline** sem conteúdo correspondente
+  no briefing, aplique a regra de **preenchimento estrutural
+  obrigatório** de `./content-rules.md` — texto de transição genérico
+  gerado sempre que o slot existir, desde que não faça nenhuma
+  alegação factual sobre o negócio. Para um **item de lista** com
+  carga factual (diferenciais, `Hero.highlights` etc.) sem contagem
+  suficiente de itens reais no briefing, vale o limite oposto do mesmo
+  arquivo: renderize só os itens reais, nunca complete a lista com
+  itens inventados. Em ambos os casos, o conteúdo que o cliente já
+  escreveu nunca é alterado ou reescrito.
 
   > `prime-local.schema.json` hoje define apenas os campos de topo
   > (fatos) — não tem ainda uma definição formal para `sections`, e
@@ -183,15 +250,35 @@ prossiga a composição sem essa dependência resolvida.
 
 ### 5.3 Copiar assets recebidos para `public/`
 
-Copie o logo (Pergunta 1) e as imagens gerais (Pergunta 5, quando
-fornecidas) para `public/` deste projeto, com nomes de arquivo
-estáveis e sem espaços/acentos (ex: `public/logo.png`,
-`public/imagem-1.jpg`, `public/imagem-2.jpg`). Depois, atualize
-`logoUrl` e `imagens` em `prime-local.json` para os caminhos
-públicos reais dentro de `public/` (ex: `/logo.png`), substituindo
-qualquer placeholder usado durante a entrevista. O conteúdo desses
-campos nunca fica apontando para um arquivo temporário da conversa —
-só para o caminho final servido pelo Next.js.
+Use os caminhos locais reais identificados na Pergunta 1 (logo) e o
+mapeamento arquivo→seção/item registrado na Pergunta 5 (imagens) —
+nunca nomes ou posições genéricas — para copiar cada arquivo para
+`public/`:
+
+- **Logo:** `public/logo.<extensão original>` (ex: `public/logo.png`).
+  Atualize `logoUrl` em `prime-local.json` para o caminho público
+  real (ex: `/logo.png`). Confirme o resultado: se a Pergunta 1
+  recebeu um arquivo e, chegando aqui, `public/logo.<ext>` não existe
+  ou `logoUrl` ainda não aponta para ele, **pare e corrija antes de
+  seguir** — isso é erro crítico (ver Pergunta 1), não algo para
+  listar como pendência no checkpoint.
+- **Cada imagem mapeada:** `public/images/<nome-descritivo>.<extensão
+  original>`, com o nome descritivo derivado da seção/item de destino
+  definido na Pergunta 5 (ex: `public/images/servico-buffet.jpg` para
+  a imagem mapeada ao card "Buffet e Gastronomia"), nunca do nome
+  original do arquivo enviado. Escreva o caminho público resultante
+  (ex: `/images/servico-buffet.jpg`) diretamente no campo de imagem
+  daquela seção/item dentro de `sections` em `prime-local.json` (a
+  mesma forma do `*Content` da seção — ex: o `imageUrl` do item
+  correspondente em `ProductsServices`, ou o `imageUrl` de `About`) —
+  não apenas no array genérico `imagens` do topo. O array `imagens`
+  do topo continua existindo como inventário geral do schema, mas não
+  substitui a escrita no campo específico da seção.
+
+Nenhum desses campos fica apontando para um arquivo temporário da
+conversa ou para um placeholder de entrevista quando o arquivo
+correspondente foi de fato recebido — só para o caminho final servido
+pelo Next.js.
 
 ### 5.4 Página principal
 

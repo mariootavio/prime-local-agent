@@ -59,13 +59,19 @@ export function About({ content }: AboutProps) {
           delayMs={150}
           className="relative aspect-4/3 w-full overflow-hidden rounded-xl md:flex-1"
         >
-          <Image
-            src={imageUrl}
-            alt={nome}
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-cover"
-          />
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={nome}
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-secondary/5 px-4 text-center font-body text-sm text-text/60">
+              (imagem pendente)
+            </div>
+          )}
         </FadeInView>
       </Container>
     </section>

@@ -57,13 +57,19 @@ export function ProductsServices({ content }: ProductsServicesProps) {
                 className="flex flex-col overflow-hidden rounded-2xl border border-secondary/10 bg-white shadow-md"
               >
                 <div className="relative aspect-4/3 w-full">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.title}
-                    fill
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className="object-cover"
-                  />
+                  {item.imageUrl ? (
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-secondary/5 px-4 text-center font-body text-sm text-text/60">
+                      (imagem pendente)
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-1 flex-col items-center p-6 text-center">

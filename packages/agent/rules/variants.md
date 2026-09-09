@@ -32,6 +32,18 @@ estrutura nova. Isso só acontece em modo Extend, ativado
 explicitamente pelo usuário — nunca inferido de um pedido ambíguo
 (ver regra de Strict Compose vs. Extend em `CLAUDE.md`).
 
+**Consulte a skill `frontend-design` antes de projetar a variante
+nova.** Decidir a aparência de uma variante inédita é uma decisão de
+design real — a mesma categoria de decisão que motiva Restyle
+(`./restyle.md`) — não seleção entre o que já existe. A skill traz o
+processo (fundamentar no negócio real, evitar os defaults genéricos
+de IA, revisar contra o brief, criticar o resultado) que evita que a
+variante nova saia com a "cara de IA" que `./content-rules.md` já
+pede para evitar. Isso vale só para Extend e Restyle — **nunca**
+consulte essa skill durante Strict Compose padrão, onde a composição
+é apenas seleção entre variantes/conteúdo já existentes, sem decisão
+de design nova a tomar.
+
 Uma variante nova, ao ser criada, deve:
 
 - Seguir os padrões visuais já estabelecidos no UI Kit: tokens de

@@ -1,5 +1,11 @@
 export interface ProductsServiceItem {
-  imageUrl: string;
+  /**
+   * Optional — absent when the client didn't provide (or map, see
+   * packages/agent/rules/create-flow.md) an image for this item. Never
+   * a placeholder string crammed into this field: the component itself
+   * renders the "(imagem pendente)" placeholder when this is absent.
+   */
+  imageUrl?: string;
   title: string;
   subtitle: string;
   ctaLabel?: string;

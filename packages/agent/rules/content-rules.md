@@ -16,17 +16,63 @@ empresa que não estejam presentes em `prime-local.json` (validado
 contra `prime-local.schema.json`). Se o dado não está lá, ele não
 existe para efeito de composição.
 
-## Preenchimento estrutural permitido
+## Placeholder de imagem ausente nunca é um arquivo gerado
 
-Quando o template de uma seção possui um slot que o briefing do
-cliente não preencheu (ex: uma subheadline de apoio em uma seção que
-só trouxe o heading principal), o agente **pode** gerar um texto de
-transição genérico para aquele slot, **desde que** esse texto não
+Quando falta a foto/imagem de um slot (`imageUrl`,
+`backgroundImageUrl` etc. — ver `*Content` da seção em
+`packages/ui-kit/src/sections/<Section>/types.ts`), o agente **nunca**
+fabrica um arquivo de imagem (SVG/PNG gerado, com ou sem texto
+"(imagem pendente)" desenhado dentro dele) para preencher o campo.
+Um arquivo de imagem inventado é, na prática, um dado inventado — a
+mesma proibição da regra acima, só que em forma visual — e carrega um
+risco concreto e já observado: um arquivo placeholder genérico
+("imagem pendente", sem contexto de qual seção/item ele representa)
+tende a ser reaproveitado sem querer em mais de um slot sem imagem
+real (ex: o mesmo arquivo acabando referenciado tanto no
+`backgroundImageUrl` do Hero quanto no `imageUrl` de um card de
+Serviços), fazendo o mesmo texto de placeholder aparecer em duas
+seções diferentes da página.
+
+O comportamento correto é **deixar o campo ausente** (`undefined`,
+nunca uma string vazia ou um caminho de arquivo fabricado) sempre que
+o campo for opcional no `*Content` da seção — o próprio componente
+renderiza seu placeholder textual internamente, contido dentro da
+seção certa, sem depender de nenhum arquivo. Se o campo for
+obrigatório e a seção for uma das obrigatórias do manifest (Header,
+Hero, Footer — ver "Campo ausente em seção obrigatória" abaixo), use
+um placeholder **textual**, nunca uma imagem gerada.
+
+## Preenchimento estrutural obrigatório (subheadlines)
+
+Quando o `*Content` de uma seção define um slot de subheadline (ex:
+`subtitle` no Hero, `subheading` em Serviços e Diferenciais,
+`subtitle` em Como Funciona — ver `types.ts` de cada seção em
+`packages/ui-kit/src/sections/<Section>/`) e o briefing do cliente
+não trouxe conteúdo correspondente, o agente **deve** gerar um texto
+de transição genérico para aquele slot, **desde que** esse texto não
 faça nenhuma alegação factual sobre o negócio (sem números, sem
-diferenciais, sem promessas). Isso é diferente de invenção de dado,
-que continua proibida pela regra acima. O conteúdo já fornecido pelo
-cliente nunca é alterado ou reescrito — permanece exatamente como
-veio, na posição correspondente do template.
+diferenciais, sem promessas). Isso vale para **todas** as seções que
+tiverem esse slot, sem exceção — deixar uma subheadline vazia quando
+o componente suporta uma não é uma opção. Isso é diferente de
+invenção de dado, que continua proibida pela regra acima. O conteúdo
+já fornecido pelo cliente nunca é alterado ou reescrito — permanece
+exatamente como veio, na posição correspondente do template.
+
+### Limite: nunca em itens de lista com carga factual
+
+Preenchimento estrutural existe apenas para texto de apoio/transição
+(subheadlines). Ele **nunca** se aplica a itens de uma lista com
+carga factual própria — diferenciais, destaques numéricos (ex:
+`Hero.highlights`), avaliações, estatísticas, ou qualquer array cujo
+conteúdo diz algo específico sobre o negócio. Um componente que
+suporta até N itens (ex: `Hero.highlights`, até 4) e recebe menos do
+que N itens reais do briefing deve renderizar **apenas** os itens
+reais disponíveis — nunca inventar itens adicionais, genéricos ou
+não, só para "completar" a lista até N. Um Hero com 2 highlights
+reais renderiza 2, não 4; o slot vazio dos outros 2 simplesmente não
+existe na página. Isso não é dado ausente em seção obrigatória (a
+regra abaixo) — é a mesma regra de "Nunca inventar dados" do topo
+deste arquivo, aplicada a itens de lista.
 
 ## Síntese de conteúdo sem campo próprio no schema
 
