@@ -1,17 +1,17 @@
-# /prime-local create <cliente>
+# Fluxo de `/prime-local:create <cliente>`
 
-Instruções para o Claude Code seguir ao rodar `/prime-local create
-<cliente>` num projeto onde `prime-local-agent init` já rodou (este
-arquivo e os demais artefatos estão em `.prime-local/`, na raiz do
-projeto). Isto **não é código** — é o roteiro da entrevista inicial e
-da composição que a segue. As regras citadas abaixo (caminhos
-relativos a este arquivo) são a fonte da verdade; não redefina o
-conteúdo delas aqui.
+Roteiro detalhado da entrevista inicial e da composição que a segue.
+Lido pelo Claude Code a partir do gatilho
+`.claude/commands/prime-local/create.md` no projeto-alvo — este
+arquivo é a lógica real; o comando é só o disparador, para não
+duplicar conteúdo. As regras citadas abaixo (caminhos relativos a
+este arquivo, dentro de `.prime-local/rules/`) são a fonte da
+verdade; não redefina o conteúdo delas aqui.
 
-- `../rules/content-rules.md`
-- `../rules/whatsapp-cta.md`
-- `../rules/seo-head.md`
-- `../rules/variants.md`
+- `./content-rules.md`
+- `./whatsapp-cta.md`
+- `./seo-head.md`
+- `./variants.md`
 - `../ui-kit.manifest.json`
 - `../prime-local.schema.json`
 
@@ -56,7 +56,7 @@ Leia o briefing e preencha `prime-local.json` seguindo
   `whatsapp`, `cores`, `logoUrl`, `instagram`, `facebook`,
   `googleMaps` e demais campos do schema que o briefing/entrevista
   sustentarem. Vêm diretamente do que o usuário forneceu — nunca
-  inferidos ou complementados (`../rules/content-rules.md`, "Nunca
+  inferidos ou complementados (`./content-rules.md`, "Nunca
   inventar dados").
 - **Objeto `sections`**: o conteúdo já escrito no briefing, mapeado
   1:1 para os componentes do UI Kit que vão consumi-lo (mesma forma
@@ -64,7 +64,7 @@ Leia o briefing e preencha `prime-local.json` seguindo
   `packages/ui-kit/src/sections/<Section>/types.ts` na origem do UI
   Kit). Para qualquer slot de seção sem conteúdo correspondente no
   briefing, aplique a regra de **preenchimento estrutural** de
-  `../rules/content-rules.md` — texto de transição genérico permitido
+  `./content-rules.md` — texto de transição genérico permitido
   apenas quando não fizer nenhuma alegação factual sobre o negócio;
   o conteúdo que o cliente já escreveu nunca é alterado ou reescrito.
 
@@ -72,7 +72,7 @@ Leia o briefing e preencha `prime-local.json` seguindo
   > (fatos) — não tem ainda uma definição formal para `sections`, e
   > seu `additionalProperties: false` na raiz rejeitaria essa chave
   > como está. Preencha `sections` mesmo assim seguindo o
-  > mapeamento acima; sinalize no checkpoint final (passo 5) que o
+  > mapeamento acima; sinalize no checkpoint final (passo 6) que o
   > schema precisa de uma atualização compatível numa próxima
   > passada, em vez de tentar contornar isso silenciosamente.
 
@@ -93,15 +93,14 @@ a única variante implementada de cada seção) a menos que o briefing
 ou o usuário indiquem preferência explícita por outra já existente.
 Trocar entre variantes já existentes é seleção (Strict Compose);
 nunca crie uma variante nova nesta etapa (isso é Extend — ver
-`../rules/variants.md` e a regra de Strict Compose vs. Extend do
-projeto).
+`./variants.md` e a regra de Strict Compose vs. Extend do projeto).
 
 ## 5. Composição, CTAs e SEO
 
 Ao montar a página:
 
-- Siga `../rules/whatsapp-cta.md` para todo CTA/link de WhatsApp.
-- Siga `../rules/seo-head.md` para title, meta tags e JSON-LD.
+- Siga `./whatsapp-cta.md` para todo CTA/link de WhatsApp.
+- Siga `./seo-head.md` para title, meta tags e JSON-LD.
 - Modo padrão é **Strict Compose**: componha só com o que já existe
   no UI Kit. Extend só se explicitamente pedido pelo usuário.
 

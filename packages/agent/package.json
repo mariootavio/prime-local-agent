@@ -10,7 +10,7 @@
   "files": [
     "bin",
     "rules",
-    "commands"
+    ".claude"
   ],
   "dependencies": {
     "fs-extra": "^11.2.0"

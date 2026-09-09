@@ -4,16 +4,26 @@
 /**
  * `prime-local-agent init`
  *
- * Installs Prime Local's rules/commands and the @prime2b/ui-kit
+ * Installs Prime Local's rules and the @prime2b/ui-kit
  * manifest/schema into the target project (the directory this is run
- * from), inside a single owned folder: <target>/.prime-local/.
+ * from), inside a single owned reference folder: <target>/.prime-local/.
+ *
+ * The one file this also writes outside that folder is the slash
+ * command trigger, at <target>/.claude/commands/prime-local/create.md
+ * — that's the directory Claude Code actually scans to discover slash
+ * commands, so the trigger has to live there to be found. Its content
+ * just points back at .prime-local/ (see rules/create-flow.md) rather
+ * than duplicating any logic.
  *
  * Per CLAUDE.md ("packages/agent — Never modifies the client
  * application's own source code — its writes are scoped to the
  * rules/commands/config it owns"): every write this script makes
- * lands under .prime-local/. The target project's own package.json
- * is only ever read (to check for @prime2b/ui-kit), never written —
- * missing the dependency is reported, not auto-installed.
+ * lands under .prime-local/ or that one command file. The target
+ * project's own package.json is only ever read (to check for
+ * @prime2b/ui-kit), never written — missing the dependency is
+ * reported, not auto-installed. If .claude/commands/ (or the
+ * prime-local/ subfolder) already has other commands in it, only
+ * create.md — the file this package owns — is touched.
  */
 
 const path = require("path");
@@ -23,6 +33,17 @@ const fse = require("fs-extra");
 const AGENT_DIR = path.resolve(__dirname, "..");
 const TARGET_DIR = process.cwd();
 const INSTALL_DIR = path.join(TARGET_DIR, ".prime-local");
+
+// Mirrors, on both ends, the path Claude Code actually scans for slash
+// commands (<project>/.claude/commands/<namespace>/<name>.md) — the
+// package's own source is laid out the same way so the copy below is
+// a straight one-file copy, no path synthesis.
+const CLAUDE_COMMAND_RELATIVE_PATH = path.join(
+  ".claude",
+  "commands",
+  "prime-local",
+  "create.md"
+);
 
 const UI_KIT_PACKAGE_NAME = "@prime2b/ui-kit";
 
@@ -75,28 +96,45 @@ function checkUiKitDependency() {
   return { found, reason: found ? "ok" : "missing" };
 }
 
-function copyIfExists(srcPath, destPath, summary, label) {
+/**
+ * Copies srcPath -> destPath (file or directory) and records the
+ * result in summary, keyed by destPath's path relative to TARGET_DIR
+ * — that relative path IS the label, so the printed summary is
+ * self-describing even though destinations now span two different
+ * roots (.prime-local/ and .claude/commands/prime-local/).
+ *
+ * Only ever creates/overwrites destPath itself — for a single-file
+ * destPath (the command trigger) this never touches sibling files,
+ * satisfying "don't overwrite other commands already in
+ * .claude/commands/".
+ */
+function copyIfExists(srcPath, destPath, summary) {
+  const relDest = path.relative(TARGET_DIR, destPath);
   if (!srcPath || !fs.existsSync(srcPath)) {
-    summary.skipped.push(`${label} (não encontrado${srcPath ? ` em ${srcPath}` : ""})`);
-    return;
+    summary.skipped.push(
+      `${relDest} (não encontrado${srcPath ? ` em ${srcPath}` : ""})`
+    );
+    return false;
   }
+  fse.ensureDirSync(path.dirname(destPath));
   fse.copySync(srcPath, destPath);
-  summary.copied.push(label);
+  summary.copied.push(relDest);
+  return true;
 }
 
 function printUsage() {
   console.log("Uso: prime-local-agent init");
   console.log();
+  console.log("Instala, no projeto-alvo:");
   console.log(
-    "Instala as rules/commands do Prime Local e a config do UI Kit"
+    "  - .prime-local/  — rules, prime-local.schema.json e"
   );
+  console.log("    ui-kit.manifest.json (base de referência);");
   console.log(
-    "(ui-kit.manifest.json, prime-local.schema.json) dentro de"
+    "  - .claude/commands/prime-local/create.md — o gatilho do"
   );
-  console.log(
-    "<projeto-alvo>/.prime-local/. Não modifica nenhum outro arquivo"
-  );
-  console.log("do projeto.");
+  console.log("    slash command /prime-local:create.");
+  console.log("Não modifica nenhum outro arquivo do projeto.");
 }
 
 function runInit() {
@@ -105,33 +143,32 @@ function runInit() {
 
   const summary = { copied: [], skipped: [] };
 
-  fse.ensureDirSync(INSTALL_DIR);
-
   copyIfExists(
     path.join(AGENT_DIR, "rules"),
     path.join(INSTALL_DIR, "rules"),
-    summary,
-    "rules/"
-  );
-  copyIfExists(
-    path.join(AGENT_DIR, "commands"),
-    path.join(INSTALL_DIR, "commands"),
-    summary,
-    "commands/"
+    summary
   );
 
   const uiKitDir = resolveUiKitDir();
   copyIfExists(
     uiKitDir && path.join(uiKitDir, "prime-local.schema.json"),
     path.join(INSTALL_DIR, "prime-local.schema.json"),
-    summary,
-    "prime-local.schema.json"
+    summary
   );
   copyIfExists(
     uiKitDir && path.join(uiKitDir, "ui-kit.manifest.json"),
     path.join(INSTALL_DIR, "ui-kit.manifest.json"),
-    summary,
-    "ui-kit.manifest.json"
+    summary
+  );
+
+  // The slash command trigger — the only write outside .prime-local/.
+  // A single-file copy, so any other commands already sitting in
+  // .claude/commands/ (or a prime-local/ subfolder with commands of
+  // its own) are left untouched.
+  const commandInstalled = copyIfExists(
+    path.join(AGENT_DIR, CLAUDE_COMMAND_RELATIVE_PATH),
+    path.join(TARGET_DIR, CLAUDE_COMMAND_RELATIVE_PATH),
+    summary
   );
 
   if (!uiKitDir) {
@@ -164,7 +201,6 @@ function runInit() {
 
   console.log();
   console.log("Resumo da instalação:");
-  console.log(`  Destino: ${path.relative(TARGET_DIR, INSTALL_DIR) || "."}${path.sep}`);
   for (const item of summary.copied) {
     console.log(`  ✓ copiado: ${item}`);
   }
@@ -172,6 +208,9 @@ function runInit() {
     console.log(`  ✗ não copiado: ${item}`);
   }
   console.log();
+  if (commandInstalled) {
+    console.log("Comando disponível: /prime-local:create");
+  }
   console.log("Nenhum outro arquivo do projeto foi modificado.");
 }
 
