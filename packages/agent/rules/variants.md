@@ -59,6 +59,12 @@ Uma variante nova, ao ser criada, deve:
 - Ser registrada como um novo item em `"variants"` no manifest, com
   `id` e `description` próprios — nunca substituindo ou removendo a(s)
   variante(s) já existente(s) da seção.
+- Ter o mesmo `id` acrescentado ao `enum` de `variant` da seção em
+  `../../ui-kit/prime-local.schema.json` (`definitions.<Section>Section`),
+  senão um `prime-local.json` que use a variante nova falha na
+  validação. O mesmo vale para qualquer campo novo do `*Content`:
+  ele precisa entrar no schema da seção, que tem
+  `additionalProperties: false`.
 - Manter o `*Content` da seção compatível com a(s) variante(s)
   existente(s): campos específicos de uma variante nova entram como
   opcionais, nunca quebrando a assinatura usada pela variante atual.

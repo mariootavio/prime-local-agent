@@ -189,13 +189,18 @@ Leia o briefing e preencha `prime-local.json` seguindo
   itens inventados. Em ambos os casos, o conteúdo que o cliente já
   escreveu nunca é alterado ou reescrito.
 
-  > `prime-local.schema.json` hoje define apenas os campos de topo
-  > (fatos) — não tem ainda uma definição formal para `sections`, e
-  > seu `additionalProperties: false` na raiz rejeitaria essa chave
-  > como está. Preencha `sections` mesmo assim seguindo o
-  > mapeamento acima; sinalize no checkpoint final (passo 6) que o
-  > schema precisa de uma atualização compatível numa próxima
-  > passada, em vez de tentar contornar isso silenciosamente.
+  O shape de cada entrada de `sections` é definido em
+  `../prime-local.schema.json` (chaves `Hero`, `ProductsServices`,
+  `ConversionBanner`, `Differentiators`, `HowItWorks`, `About`,
+  `FAQ`, `SocialProof`), com `additionalProperties: false` em cada
+  nível. Cada entrada guarda **só** o conteúdo próprio da seção —
+  `nome`, `whatsapp` e `mensagemPrincipalWhatsapp` nunca vão dentro
+  de `sections`; a composição (passo 5.4) os injeta a partir dos
+  campos de topo. Header, Localização e Contato e Footer não têm
+  entrada em `sections`. Valide o `prime-local.json` final contra o
+  schema antes do checkpoint: um erro de validação (campo com nome
+  errado, ícone fora do registro, variante inexistente) é corrigido
+  antes de prosseguir, nunca contornado.
 
 ### Dados de contato, mapa e avaliações
 
@@ -365,8 +370,7 @@ Antes de considerar a criação concluída, apresente ao usuário:
   uma, origem das cores).
 - A URL local do preview rodando (passo 5.7), para revisão visual.
 - Toda pendência encontrada — dado ausente preenchido com
-  placeholder, avaliações reais não obtidas para Prova Social, a
-  observação de schema do passo 2, etc.
+  placeholder, avaliações reais não obtidas para Prova Social, etc.
 
 Nada é commitado antes dessa aprovação explícita do usuário — a
 composição fica pronta, rodando localmente, para revisão visual no

@@ -55,7 +55,9 @@ export const mockPrimeLocal = {
   cores: {
     primary: "#FF4001",
     secondary: "#0a0a0a",
-    text: "#000000cc",
+    // Opaque equivalent of the former #000000cc (80% black on white) —
+    // the schema only accepts 3/6-digit hex.
+    text: "#333333",
     accent: "#FF4001",
   },
 };

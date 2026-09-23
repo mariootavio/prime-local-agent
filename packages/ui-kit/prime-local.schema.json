@@ -145,6 +145,221 @@
       "type": "array",
       "description": "URLs das imagens recebidas do cliente para uso no site.",
       "items": { "type": "string" }
+    },
+    "sections": {
+      "type": "object",
+      "description": "Conteúdo já escrito de cada seção (briefing → UI Kit), mapeado 1:1 para o *Content de packages/ui-kit/src/sections/<Section>/types.ts. Cada entrada guarda SÓ o conteúdo próprio da seção: nome, whatsapp e mensagemPrincipalWhatsapp nunca vão aqui — a composição (create-flow.md, passo 5.4) os injeta a partir dos campos de topo. Header, LocationContact e Footer não têm entrada: são montados inteiramente a partir dos campos de topo. Uma seção fora da composição simplesmente não tem entrada.",
+      "additionalProperties": false,
+      "properties": {
+        "Hero": { "$ref": "#/definitions/HeroSection" },
+        "ProductsServices": { "$ref": "#/definitions/ProductsServicesSection" },
+        "ConversionBanner": { "$ref": "#/definitions/ConversionBannerSection" },
+        "Differentiators": { "$ref": "#/definitions/DifferentiatorsSection" },
+        "HowItWorks": { "$ref": "#/definitions/HowItWorksSection" },
+        "About": { "$ref": "#/definitions/AboutSection" },
+        "FAQ": { "$ref": "#/definitions/FAQSection" },
+        "SocialProof": { "$ref": "#/definitions/SocialProofSection" }
+      }
+    }
+  },
+  "definitions": {
+    "ctaLabel": {
+      "type": "string",
+      "description": "Texto do botão de WhatsApp da seção. Opcional — o componente tem um rótulo padrão."
+    },
+    "imagePath": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Caminho público real de uma imagem recebida do cliente (ex: /images/servico-buffet.jpg). Omita o campo quando a imagem não existe — nunca string vazia nem arquivo gerado (content-rules.md)."
+    },
+    "HeroSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["headline"],
+      "properties": {
+        "headline": { "type": "string", "minLength": 1 },
+        "subtitle": { "type": "string" },
+        "backgroundImageUrl": { "$ref": "#/definitions/imagePath" },
+        "highlights": {
+          "type": "array",
+          "description": "Só destaques reais do briefing — nunca completados até o máximo (content-rules.md).",
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title", "text"],
+            "properties": {
+              "title": { "type": "string", "minLength": 1 },
+              "text": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "ctaLabel": { "$ref": "#/definitions/ctaLabel" },
+        "variant": { "enum": ["image-background"] }
+      }
+    },
+    "ProductsServicesSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items"],
+      "properties": {
+        "heading": { "type": "string" },
+        "subheading": { "type": "string" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title", "subtitle"],
+            "properties": {
+              "imageUrl": { "$ref": "#/definitions/imagePath" },
+              "title": { "type": "string", "minLength": 1 },
+              "subtitle": { "type": "string", "minLength": 1 },
+              "ctaLabel": { "$ref": "#/definitions/ctaLabel" }
+            }
+          }
+        },
+        "variant": { "enum": ["image-cards-grid"] }
+      }
+    },
+    "ConversionBannerSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["headline"],
+      "properties": {
+        "headline": { "type": "string", "minLength": 1 },
+        "subtitle": { "type": "string" },
+        "body": { "type": "string" },
+        "ctaLabel": { "$ref": "#/definitions/ctaLabel" },
+        "variant": { "enum": ["solid-primary-banner"] }
+      }
+    },
+    "DifferentiatorsSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items"],
+      "properties": {
+        "heading": { "type": "string" },
+        "subheading": { "type": "string" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["icon", "title"],
+            "properties": {
+              "icon": {
+                "enum": ["shield", "clock", "users", "award"],
+                "description": "Chave do registro ICONS em Differentiators.tsx — um valor fora dele cairia silenciosamente no ícone padrão."
+              },
+              "title": { "type": "string", "minLength": 1 },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "ctaLabel": { "$ref": "#/definitions/ctaLabel" },
+        "variant": { "enum": ["icon-grid"] }
+      }
+    },
+    "HowItWorksSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["steps"],
+      "properties": {
+        "heading": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["stepNumber", "title", "description"],
+            "properties": {
+              "stepNumber": { "type": "integer", "minimum": 1 },
+              "title": { "type": "string", "minLength": 1 },
+              "description": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "ctaLabel": { "$ref": "#/definitions/ctaLabel" },
+        "variant": { "enum": ["numbered-timeline"] }
+      }
+    },
+    "AboutSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["headline", "subtitle"],
+      "properties": {
+        "headline": { "type": "string", "minLength": 1 },
+        "subtitle": { "type": "string", "minLength": 1 },
+        "imageUrl": { "$ref": "#/definitions/imagePath" },
+        "ctaLabel": { "$ref": "#/definitions/ctaLabel" },
+        "variant": { "enum": ["text-image-split"] }
+      }
+    },
+    "FAQSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questions"],
+      "properties": {
+        "headline": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "questions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["question", "answer"],
+            "properties": {
+              "question": { "type": "string", "minLength": 1 },
+              "answer": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "variant": { "enum": ["accordion"] }
+      }
+    },
+    "SocialProofSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviews"],
+      "properties": {
+        "heading": { "type": "string" },
+        "subheading": { "type": "string" },
+        "ratingSummary": {
+          "type": "object",
+          "description": "Nota geral do perfil exatamente como o Google exibe — nunca calculada a partir de reviews. Omita quando o cliente não a forneceu.",
+          "additionalProperties": false,
+          "required": ["average"],
+          "properties": {
+            "average": { "type": "number", "minimum": 1, "maximum": 5 },
+            "totalReviews": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "reviews": {
+          "type": "array",
+          "description": "Somente avaliações reais do Google fornecidas pelo cliente. Sem mínimo de 3: 1 ou 2 reais são publicadas como estão, nunca completadas (content-rules.md). Zero avaliações = seção fora da composição, sem entrada aqui.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["authorName", "rating", "text"],
+            "properties": {
+              "authorName": { "type": "string", "minLength": 1 },
+              "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
+              "text": { "type": "string", "minLength": 1 },
+              "relativeTime": { "type": "string" }
+            }
+          }
+        },
+        "ctaLabel": { "$ref": "#/definitions/ctaLabel" },
+        "variant": { "enum": ["google-reviews-carousel"] }
+      }
     }
   }
 }
