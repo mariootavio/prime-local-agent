@@ -5,8 +5,14 @@ import { buildWhatsAppUrl, defaultWhatsAppMessage } from "../../lib/whatsapp";
 import { WhatsAppIcon } from "../../icons/WhatsAppIcon";
 import { FacebookIcon } from "../../icons/FacebookIcon";
 import { InstagramIcon } from "../../icons/InstagramIcon";
-import { Mail } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import type { FooterContent } from "./types";
+
+/** Same 55-prefix normalization as buildWhatsAppUrl (../../lib/whatsapp.ts). */
+function telefoneDigits(telefone: string): string {
+  const digits = telefone.replace(/\D/g, "");
+  return digits.startsWith("55") ? digits : `55${digits}`;
+}
 
 export interface FooterProps {
   content: FooterContent;
@@ -20,6 +26,7 @@ export function Footer({ content }: FooterProps) {
     aboutText,
     enderecoCompleto,
     horario,
+    telefone,
     email,
     instagram,
     facebook,
@@ -45,15 +52,14 @@ export function Footer({ content }: FooterProps) {
             className="h-8 w-auto"
           />
           {/*
-            Structural fallback per content-rules.md "Preenchimento
-            estrutural permitido": generic transition copy, no factual
-            claim about the business, used only when the client's
-            briefing didn't supply aboutText.
+            Only the client's own aboutText from prime-local.json — no
+            fixed fallback copy baked into the component.
           */}
-          <p className="max-w-xs font-body text-sm text-on-dark/70">
-            {aboutText ??
-              "Entre em contato pelos canais abaixo para saber mais."}
-          </p>
+          {aboutText && (
+            <p className="max-w-xs font-body text-sm text-on-dark/70">
+              {aboutText}
+            </p>
+          )}
           {hasSocialLinks && (
             <div className="flex items-center gap-4">
               {facebook && (
@@ -129,6 +135,15 @@ export function Footer({ content }: FooterProps) {
             <WhatsAppIcon className="h-5 w-5 shrink-0 text-[var(--color-whatsapp)]" />
             WhatsApp
           </a>
+          {telefone && (
+            <a
+              href={`tel:+${telefoneDigits(telefone)}`}
+              className="flex items-center gap-2 font-body text-sm text-on-dark/70 transition-colors hover:text-on-dark"
+            >
+              <Phone aria-hidden="true" className="h-5 w-5 shrink-0" />
+              {telefone}
+            </a>
+          )}
           {email && (
             <a
               href={`mailto:${email}`}

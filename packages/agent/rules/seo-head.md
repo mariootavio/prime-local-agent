@@ -48,3 +48,9 @@ reais vinculadas a `googleBusinessProfile`. Isso vale mesmo se a
 seção Prova Social não estiver na composição — este bloco de
 structured data segue a mesma condição de dado real que governa
 aquela seção, independente de ela estar visível na página.
+
+Quando incluído, `AggregateRating` usa exatamente
+`sections.SocialProof.ratingSummary` (`ratingValue` = `average`,
+`reviewCount` = `totalReviews`) — sem `ratingSummary` real, sem
+`AggregateRating`; nunca calcule a nota a partir de `reviews`. Cada
+`Review` corresponde 1:1 a um item real de `reviews`.

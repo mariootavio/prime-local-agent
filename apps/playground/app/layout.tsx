@@ -17,8 +17,7 @@ const themeVars = {
   "--color-primary": mockPrimeLocal.cores.primary,
   "--color-secondary": mockPrimeLocal.cores.secondary,
   "--color-text": mockPrimeLocal.cores.text,
-  "--color-accent": mockPrimeLocal.cores.accent,
-} as CSSProperties;
+  "--color-accent": mockPrimeLocal.cores.accent,} as CSSProperties;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

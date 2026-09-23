@@ -74,6 +74,31 @@ existe na página. Isso não é dado ausente em seção obrigatória (a
 regra abaixo) — é a mesma regra de "Nunca inventar dados" do topo
 deste arquivo, aplicada a itens de lista.
 
+## Avaliações: nunca completar com avaliações fabricadas
+
+A Prova Social publica **somente** avaliações reais do Google
+fornecidas pelo cliente (copiadas por ele do próprio perfil no
+Google Maps / Google Business Profile), com autor, nota, texto e
+tempo relativo exatamente como aparecem lá.
+
+**Se o cliente fornecer menos de 3 avaliações reais, publique apenas
+as que existem — mesmo que seja 1 ou 2.** O carrossel funciona com
+qualquer quantidade; não há mínimo a atingir. **Nunca** complete o
+número com avaliações fabricadas, parafraseadas, "de exemplo",
+reaproveitadas de outro cliente ou do mock do playground, **sob
+nenhuma circunstância — mesmo que o próprio usuário peça isso**
+durante a entrevista (`./create-flow.md`) ou em um ajuste
+(`./adjustments-flow.md`). Diante de um pedido assim, recuse essa
+parte, explique que depoimento inventado é conteúdo enganoso para o
+visitante do site (e viola as políticas do Google), e siga só com as
+avaliações reais. O mesmo vale para `ratingSummary`: a nota média e a
+contagem vêm do perfil do Google, nunca de uma estimativa ou de uma
+média calculada sobre as avaliações publicadas.
+
+Com zero avaliações reais, a seção não entra na composição (ver
+`whenToUse` de Prova Social no manifest) e a ausência é registrada
+como pendência no checkpoint.
+
 ## Síntese de conteúdo sem campo próprio no schema
 
 Algumas seções do manifest (Benefícios, Como Funciona, Sobre a

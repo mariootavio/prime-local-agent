@@ -145,8 +145,8 @@
       "showInNav": true,
       "variants": [
         {
-          "id": "review-cards-grid",
-          "description": "Grade de cards de avaliação com estrelas, texto do depoimento e nome do autor."
+          "id": "google-reviews-carousel",
+          "description": "Fundo cinza claro (o mesmo de Serviços), heading centralizado no padrão do site, linha com logo do Google + nota média + estrelas e setas de navegação, e carrossel horizontal de cards (avatar com inicial, nome, tempo relativo, estrelas, texto). Mostra 1 card por vez no mobile, 2 no tablet e 3 no desktop."
         }
       ]
     },
@@ -169,14 +169,14 @@
       "name": "Localização e Contato",
       "required": false,
       "description": "Mostra endereço, mapa e canais de contato do negócio.",
-      "whenToUse": "Use quando enderecoCompleto, googleMaps, telefone ou horario estiverem preenchidos.",
+      "whenToUse": "Use quando enderecoCompleto estiver preenchido — o mapa é gerado a partir dele; sem enderecoCompleto a variante map-embed não renderiza nada.",
       "anchorId": "contato",
       "navLabel": "Contato",
       "showInNav": true,
       "variants": [
         {
           "id": "map-embed",
-          "description": "Embed do Google Maps em largura total (implementação parcial — ainda sem bloco de endereço/contato ao lado do mapa)."
+          "description": "Embed do Google Maps em largura total, gerado a partir de enderecoCompleto (sem API Key; mostra o cadastro do Google Business daquele endereço quando existir). Implementação parcial — ainda sem bloco de endereço/contato ao lado do mapa."
         }
       ]
     },

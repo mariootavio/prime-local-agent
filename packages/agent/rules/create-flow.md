@@ -91,6 +91,12 @@ Pergunte Instagram e Facebook (URL ou @).
 
 Pergunte o link do Google Maps da localização do negócio.
 
+O mapa da seção Localização e Contato **não** é montado a partir
+desse link — é gerado a partir de `enderecoCompleto` (ver passo 2,
+"Dados de contato, mapa e avaliações"). Se o endereço completo ainda
+não apareceu até aqui e não vier no briefing, registre-o como
+pendência no checkpoint (passo 6) — nunca o deduza a partir do link.
+
 ### Pergunta 5 — Imagens gerais do site
 
 Pergunte por imagens gerais do negócio — fotos do ambiente, da
@@ -190,6 +196,37 @@ Leia o briefing e preencha `prime-local.json` seguindo
   > mapeamento acima; sinalize no checkpoint final (passo 6) que o
   > schema precisa de uma atualização compatível numa próxima
   > passada, em vez de tentar contornar isso silenciosamente.
+
+### Dados de contato, mapa e avaliações
+
+Os campos abaixo são **sempre** copiados, sem alteração, do
+`prime-local.json` real deste cliente para o `content` de cada seção.
+Os componentes do UI Kit não têm mais nenhum valor fixo ou fallback
+para eles — um campo ausente simplesmente não é renderizado. Nunca
+preencha um desses campos com valor de exemplo, do mock do
+playground (`apps/playground/app/mock/prime-local.mock.ts`), de outro
+cliente, ou "provisório":
+
+| Seção | Campos em `content` | Origem em `prime-local.json` |
+| --- | --- | --- |
+| Localização e Contato | `enderecoCompleto`, `cidade`, `estado`, `telefone`, `whatsapp`, `horario`, `googleMaps` | campos de topo homônimos |
+| Footer | `nome`, `logoUrl`, `whatsapp`, `telefone`, `email`, `enderecoCompleto`, `horario`, `aboutText`, `instagram`, `facebook` | campos de topo homônimos |
+| Prova Social | `reviews`, `ratingSummary` | `sections.SocialProof`, só com avaliações reais (ver abaixo) |
+
+- **Mapa:** o componente `LocationContact` gera a URL do embed
+  sozinho a partir de `enderecoCompleto`
+  (`https://maps.google.com/maps?q=<encodeURIComponent(enderecoCompleto)>&output=embed`,
+  sem API Key). O agente **nunca** escreve uma URL de embed à mão
+  nem usa `googleMaps` como `src` do mapa. Sem `enderecoCompleto`, a
+  seção não entra na composição (`whenToUse` do manifest) e a
+  ausência vira pendência no checkpoint.
+- **Prova Social:** `reviews` e `ratingSummary` só contêm avaliações
+  reais do Google fornecidas pelo cliente (copiadas do Google Maps /
+  Google Business Profile dele). `ratingSummary.average` é a nota
+  exibida pelo Google para o perfil — nunca calculada a partir das
+  avaliações publicadas. Vale integralmente a regra "Avaliações:
+  nunca completar com avaliações fabricadas" de
+  `./content-rules.md`.
 
 ## 3. Selecionar as seções
 

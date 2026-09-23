@@ -2,7 +2,7 @@ import { Button } from "../../primitives/Button";
 import { Container } from "../../primitives/Container";
 import { FadeInView } from "../../primitives/FadeInView";
 import { buildWhatsAppUrl, defaultWhatsAppMessage } from "../../lib/whatsapp";
-import { CheckIcon } from "../../icons/CheckIcon";
+import { Check } from "lucide-react";
 import { WhatsAppIcon } from "../../icons/WhatsAppIcon";
 import type { HeroContent } from "./types";
 
@@ -93,7 +93,10 @@ export function Hero({ content }: HeroProps) {
                 delayMs={index * 90}
                 className="flex items-center gap-2"
               >
-                <CheckIcon className="h-5 w-5 shrink-0 text-[var(--color-primary)]" />
+                <Check
+                  aria-hidden="true"
+                  className="h-5 w-5 shrink-0 text-[var(--color-primary)]"
+                />
                 <span className="font-title text-base font-semibold">
                   {item.title}
                 </span>

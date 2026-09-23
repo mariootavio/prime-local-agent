@@ -1,16 +1,17 @@
+/**
+ * Every field is copied verbatim from the client's prime-local.json
+ * during composition — the component has no fixed fallback for any of
+ * them. An absent optional field simply isn't rendered.
+ */
 export interface FooterContent {
   nome: string;
   logoUrl: string;
   whatsapp: string;
-  /**
-   * Short institutional blurb rendered under the logo. When absent,
-   * a generic structural placeholder is used instead (see
-   * packages/agent/rules/content-rules.md) — never Lorem Ipsum or an
-   * invented factual claim about the business.
-   */
+  /** Short institutional blurb under the logo. Omitted when absent. */
   aboutText?: string;
   enderecoCompleto?: string;
   horario?: string;
+  telefone?: string;
   email?: string;
   instagram?: string;
   facebook?: string;

@@ -1,4 +1,5 @@
 import { FadeInView } from "../../primitives/FadeInView";
+import { buildGoogleMapsEmbedUrl } from "../../lib/maps";
 import type { LocationContactContent } from "./types";
 
 export interface LocationContactProps {
@@ -6,16 +7,20 @@ export interface LocationContactProps {
 }
 
 /**
- * Partial implementation — map embed only. `enderecoCompleto`,
- * `telefone`, `whatsapp` and `horario` are already reserved on
- * LocationContactContent for a future pass that adds the rest of
- * this section (contact details alongside the map) — intentionally
- * unused here for now.
+ * Partial implementation — map embed only. `telefone`, `whatsapp` and
+ * `horario` are already reserved on LocationContactContent for a
+ * future pass that adds contact details alongside the map —
+ * intentionally unused here for now.
+ *
+ * The embed URL is always derived from the client's real
+ * `enderecoCompleto` (see ../../lib/maps.ts) — never a fixed address
+ * or a pasted embed. No address, no map: the section renders nothing
+ * rather than pointing at a placeholder location.
  */
 export function LocationContact({ content }: LocationContactProps) {
-  const { googleMaps } = content;
+  const { enderecoCompleto } = content;
 
-  if (!googleMaps) {
+  if (!enderecoCompleto) {
     return null;
   }
 
@@ -26,8 +31,8 @@ export function LocationContact({ content }: LocationContactProps) {
     <section id="contato" className="scroll-mt-20 bg-white">
       <FadeInView as="div">
         <iframe
-          src={googleMaps}
-          title="Mapa de localização"
+          src={buildGoogleMapsEmbedUrl(enderecoCompleto)}
+          title={`Mapa de localização: ${enderecoCompleto}`}
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
           className="h-[400px] w-full border-0"

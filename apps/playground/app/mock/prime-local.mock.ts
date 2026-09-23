@@ -256,9 +256,13 @@ export const mockAbout: AboutContent = {
 };
 
 /**
- * Placeholder editorial copy (Lorem Ipsum) — same reasoning as
- * mockHero. Ratings and relative times are example values, not real
- * Google Business Profile data.
+ * DEV-ONLY Lorem Ipsum reviews, just to exercise the carousel layout
+ * in the playground. In a real composition, reviews and ratingSummary
+ * are ONLY ever the client's real Google reviews, copied by the client
+ * from their Google Maps / Business Profile listing — never generated,
+ * paraphrased or padded by the agent, not even to reach a minimum
+ * count (packages/agent/rules/content-rules.md). Ratings, counts and
+ * relative times here are example values, not real data.
  */
 export const mockSocialProof: SocialProofContent = {
   heading: "O Que Dizem Nossos Clientes",
@@ -267,6 +271,7 @@ export const mockSocialProof: SocialProofContent = {
   nome: mockPrimeLocal.nome,
   whatsapp: mockPrimeLocal.whatsapp,
   mensagemPrincipalWhatsapp: mockPrimeLocal.mensagemPrincipalWhatsapp,
+  ratingSummary: { average: 5, totalReviews: 48 },
   reviews: [
     {
       authorName: "Lorem Ipsum",
@@ -276,7 +281,7 @@ export const mockSocialProof: SocialProofContent = {
     },
     {
       authorName: "Dolor Sit Amet",
-      rating: 4,
+      rating: 5,
       text: "Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna.",
       relativeTime: "há 1 mês",
     },
@@ -285,6 +290,24 @@ export const mockSocialProof: SocialProofContent = {
       rating: 5,
       text: "Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip.",
       relativeTime: "há 2 meses",
+    },
+    {
+      authorName: "Sed Eiusmod",
+      rating: 5,
+      text: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      relativeTime: "há 3 meses",
+    },
+    {
+      authorName: "Tempor Incididunt",
+      rating: 5,
+      text: "Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim.",
+      relativeTime: "há 4 meses",
+    },
+    {
+      authorName: "Magna Aliqua",
+      rating: 5,
+      text: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
+      relativeTime: "há 6 meses",
     },
   ],
 };
@@ -327,16 +350,13 @@ export const mockFAQ: FAQContent = {
 };
 
 /**
- * Partial mock — only googleMaps is set, matching LocationContact's
- * current map-only implementation. This is Google's no-API-key embed
- * form (a maps search URL with output=embed appended), not a real
- * Prime2B embed — swap for the client's actual embed URL later.
+ * LocationContact builds the map embed from enderecoCompleto itself
+ * (packages/ui-kit/src/lib/maps.ts) — no embed URL to paste here.
  */
 export const mockLocationContact: LocationContactContent = {
   cidade: mockPrimeLocal.cidade,
   estado: mockPrimeLocal.estado,
-  googleMaps:
-    "https://www.google.com/maps?q=S%C3%A3o+Jos%C3%A9+do+Rio+Preto,+SP&z=16&output=embed",
+  enderecoCompleto: mockPrimeLocal.enderecoCompleto,
 };
 
 export const mockFooter: FooterContent = {
