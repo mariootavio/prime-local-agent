@@ -54,7 +54,7 @@ automático de composição —, os parâmetros que a seção **já** expõe:
 - **Demais campos do `*Content` da seção** que já afetam apresentação
   visual sem exigir código novo: quais `highlights`/itens reais
   destacar e em que ordem, qual imagem usar (dentre as já mapeadas —
-  `./create-flow.md`, Pergunta 5), rótulos de CTA, etc. — sempre
+  `./create-flow.md`, Pergunta 6), rótulos de CTA, etc. — sempre
   dentro dos limites de `./content-rules.md` (nunca inventar dado
   para preencher um Restyle).
 

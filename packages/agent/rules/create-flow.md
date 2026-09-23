@@ -19,7 +19,7 @@ verdade; não redefina o conteúdo delas aqui.
 
 **Regra obrigatória: uma pergunta por vez.** Faça **uma única**
 pergunta, aguarde a resposta do usuário nessa mesma conversa, e só
-então avance para a próxima. **Nunca** apresente duas ou mais das 6
+então avance para a próxima. **Nunca** apresente duas ou mais das 7
 perguntas abaixo na mesma mensagem — mesmo que pareçam relacionadas
 entre si (ex: cores e redes sociais, ou Maps e imagens). Cada uma é
 um turno de conversa separado, com resposta do usuário antes de
@@ -31,13 +31,15 @@ possíveis — binária (sim/não) ou de escolha entre alternativas
 específicas — usa o mecanismo de seleção por opções do Claude Code
 (ex: a tool `AskUserQuestion`), nunca uma pergunta de texto livre
 corrido esperando que o usuário digite a resposta certa. Isso vale
-para a Pergunta 2 (cores) abaixo e para o passo de mapeamento de
-imagens da Pergunta 5. Só ficam em formato aberto (texto livre ou
-anexo de arquivo) as perguntas cuja resposta não é uma escolha entre
+para a Pergunta 2 (cores) abaixo, para a abertura da Pergunta 5
+(avaliações: tem ou não tem) e para o passo de mapeamento de imagens
+da Pergunta 6. Só ficam em formato aberto (texto livre ou anexo de
+arquivo) as perguntas cuja resposta não é uma escolha entre
 alternativas conhecidas: Pergunta 1 (logo), Pergunta 3 (redes
-sociais), Pergunta 4 (Google Maps) e Pergunta 6 (briefing) — a
-Pergunta 5 (imagens) também é anexo de arquivo em si, mesmo com seu
-sub-passo de mapeamento em opções. A mesma regra de formato vale para
+sociais), Pergunta 4 (Google Maps), o texto colado das avaliações na
+Pergunta 5 e Pergunta 7 (briefing) — a Pergunta 6 (imagens) também é
+anexo de arquivo em si, mesmo com seu sub-passo de mapeamento em
+opções. A mesma regra de formato vale para
 `./adjustments-flow.md`.
 
 Ordem fixa, sem pular nem antecipar:
@@ -97,7 +99,66 @@ desse link — é gerado a partir de `enderecoCompleto` (ver passo 2,
 não apareceu até aqui e não vier no briefing, registre-o como
 pendência no checkpoint (passo 6) — nunca o deduza a partir do link.
 
-### Pergunta 5 — Imagens gerais do site
+### Pergunta 5 — Avaliações de clientes
+
+Pergunte, em formato de opções (ver regra de formato acima), se o
+usuário tem avaliações reais de clientes para incluir na seção Prova
+Social:
+
+- **"Sim, vou colar as avaliações"**
+- **"Não tenho avaliações no momento"**
+
+**Se sim:** peça que o usuário cole o texto das avaliações reais,
+copiadas manualmente do Google Maps / Google Business Profile do
+cliente — uma por vez ou todas juntas, como preferir. Para cada
+avaliação, os dados são:
+
+- nome do avaliador (`authorName`);
+- nota de 1 a 5 (`rating`);
+- texto da avaliação (`text`);
+- há quanto tempo foi publicada (`relativeTime`, ex: "há 2 semanas")
+  — só se disponível; se não vier, omita o campo.
+
+Aceite **quantas avaliações o usuário fornecer, sem mínimo
+obrigatório** — 1 ou 2 são publicadas normalmente. Transcreva cada
+uma exatamente como veio: não corrija, resuma, reescreva nem traduza
+o texto. Se faltar nome ou nota de alguma avaliação colada, pergunte
+especificamente por aquele dado — nunca o deduza ou estime.
+
+Ainda nesta mesma etapa (depois das avaliações, como pergunta
+seguinte e sem pular para a Pergunta 6), pergunte se o usuário tem à
+mão a **nota média geral** e o **total de avaliações** exibidos no
+perfil do Google do cliente, para preencher `ratingSummary`
+(`average` e `totalReviews`). Os dois são opcionais: preencha só o
+que o usuário informar; se ele não tiver a nota média, deixe
+`ratingSummary` ausente — **nunca** calcule a média a partir das
+avaliações coladas nem estime a contagem.
+
+Registre o resultado em `sections.SocialProof` (`reviews` e, quando
+houver, `ratingSummary`), seguindo o shape de
+`../prime-local.schema.json`.
+
+**Se não:** não há avaliações (`reviews` vazio) e `ratingSummary`
+fica ausente. No `prime-local.json`, isso se representa **não
+criando a entrada `sections.SocialProof`** — o schema exige ao menos
+uma avaliação dentro dela, já que uma seção fora da composição não
+tem entrada em `sections`. A Prova Social **não entra** na
+composição final (segue o `whenToUse` de Prova Social em
+`../ui-kit.manifest.json`, que exige avaliações reais vinculadas ao
+Google Business Profile), e a ausência é registrada como pendência no
+checkpoint (passo 6).
+
+**Nunca fabricar avaliações.** Em nenhuma circunstância o agente
+gera, completa, parafraseia ou sugere avaliações fictícias — nem
+"de exemplo", nem para chegar a 3, nem se o usuário tiver menos de 3
+reais, nem se o próprio usuário pedir explicitamente. Diante de um
+pedido assim, recuse essa parte, explique que depoimento inventado
+engana o visitante do site (e viola as políticas do Google), e siga
+só com o que foi fornecido como real. Publica-se apenas o que o
+usuário entregou como avaliação real — ver "Avaliações: nunca
+completar com avaliações fabricadas" em `./content-rules.md`.
+
+### Pergunta 6 — Imagens gerais do site
 
 Pergunte por imagens gerais do negócio — fotos do ambiente, da
 equipe, de produtos etc. — para uso em seções como Galeria e Sobre
@@ -105,12 +166,12 @@ Nós (`imagens` em `prime-local.json`). Deixe claro ao usuário que
 esta pergunta é **opcional**.
 
 **Mapeamento explícito, obrigatório antes de prosseguir para a
-Pergunta 6.** Nomes de arquivo de imagem recebidos em uma entrevista
+Pergunta 7.** Nomes de arquivo de imagem recebidos em uma entrevista
 real costumam ser genéricos (`IMG_0001.jpg`, `foto.jpg`,
 `WhatsApp Image 2024...jpeg`) e a ordem de envio não é confiável —
 **nunca** infira a qual seção ou item cada imagem se destina pelo
 nome do arquivo ou pela posição em que chegou. Assim que os arquivos
-forem recebidos (e antes de seguir para a Pergunta 6):
+forem recebidos (e antes de seguir para a Pergunta 7):
 
 1. Apresente ao usuário a lista das imagens recebidas — nome do
    arquivo e, quando o canal de conversa suportar, uma miniatura de
@@ -151,17 +212,17 @@ fato enviada mas ainda não tem seção/item definido nunca vira
 mapeamento acima (item 2) antes de considerar essa pergunta
 encerrada.
 
-### Pergunta 6 — Briefing
+### Pergunta 7 — Briefing
 
 Peça o documento de briefing (PDF ou texto) — já deve trazer o
 conteúdo escrito das seções (headlines, descrições, diferenciais
 etc.), não apenas dados brutos.
 
-Esta é a última das 6 perguntas. Depois de receber a resposta, siga
+Esta é a última das 7 perguntas. Depois de receber a resposta, siga
 direto para os passos 2–6 abaixo (leitura do briefing, preenchimento
 do `prime-local.json`, seleção de seções, variantes, composição e
 checkpoint) — **sem nenhuma pausa ou pergunta intermediária** além
-das 6 acima.
+das 7 acima.
 
 ## 2. Preencher `prime-local.json`
 
@@ -216,7 +277,7 @@ cliente, ou "provisório":
 | --- | --- | --- |
 | Localização e Contato | `enderecoCompleto`, `cidade`, `estado`, `telefone`, `whatsapp`, `horario`, `googleMaps` | campos de topo homônimos |
 | Footer | `nome`, `logoUrl`, `whatsapp`, `telefone`, `email`, `enderecoCompleto`, `horario`, `aboutText`, `instagram`, `facebook` | campos de topo homônimos |
-| Prova Social | `reviews`, `ratingSummary` | `sections.SocialProof`, só com avaliações reais (ver abaixo) |
+| Prova Social | `reviews`, `ratingSummary` | `sections.SocialProof`, coletado na Pergunta 5 — só avaliações reais (ver abaixo) |
 
 - **Mapa:** o componente `LocationContact` gera a URL do embed
   sozinho a partir de `enderecoCompleto`
@@ -293,7 +354,7 @@ prossiga a composição sem essa dependência resolvida.
 ### 5.3 Copiar assets recebidos para `public/`
 
 Use os caminhos locais reais identificados na Pergunta 1 (logo) e o
-mapeamento arquivo→seção/item registrado na Pergunta 5 (imagens) —
+mapeamento arquivo→seção/item registrado na Pergunta 6 (imagens) —
 nunca nomes ou posições genéricas — para copiar cada arquivo para
 `public/`:
 
@@ -306,7 +367,7 @@ nunca nomes ou posições genéricas — para copiar cada arquivo para
   listar como pendência no checkpoint.
 - **Cada imagem mapeada:** `public/images/<nome-descritivo>.<extensão
   original>`, com o nome descritivo derivado da seção/item de destino
-  definido na Pergunta 5 (ex: `public/images/servico-buffet.jpg` para
+  definido na Pergunta 6 (ex: `public/images/servico-buffet.jpg` para
   a imagem mapeada ao card "Buffet e Gastronomia"), nunca do nome
   original do arquivo enviado. Escreva o caminho público resultante
   (ex: `/images/servico-buffet.jpg`) diretamente no campo de imagem

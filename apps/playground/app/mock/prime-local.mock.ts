@@ -163,8 +163,6 @@ export const mockProductsServices: ProductsServicesContent = {
 /**
  * Placeholder editorial copy (Lorem Ipsum) — same reasoning as
  * mockHero. `icon` keys into the registry in Differentiators.tsx.
- * One item (`award`) is left without `description` on purpose, to
- * keep exercising the no-description layout alongside the filled one.
  */
 export const mockDifferentiators: DifferentiatorsContent = {
   heading: "Nossos Diferenciais",
@@ -189,7 +187,11 @@ export const mockDifferentiators: DifferentiatorsContent = {
       title: "Adipiscing Elit Sed",
       description: "Do eiusmod tempor incididunt ut labore et dolore.",
     },
-    { icon: "award", title: "Do Eiusmod Tempor" },
+    {
+      icon: "award",
+      title: "Do Eiusmod Tempor",
+      description: "Incididunt ut labore et dolore magna aliqua ut enim.",
+    },
   ],
 };
 
